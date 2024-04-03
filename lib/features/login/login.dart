@@ -1,3 +1,4 @@
+import 'package:dockcheck_web/features/create/create_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,7 +25,10 @@ class Login extends StatelessWidget {
             if (state is LoginSuccess) {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const Home()),
+                MaterialPageRoute(
+                    builder: (context) => Home(
+                          isAdmin: state.isAdmin,
+                        )),
               );
             } else if (state is LoginError) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -110,6 +114,24 @@ class Login extends StatelessWidget {
                                           style: DockTheme.headLine.copyWith(
                                               color: DockColors.white),
                                         ),
+                                      ),
+                                    ),
+                                  ),
+                                  //text with underline and inkwell to navigate to the create user page
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => CreateUser()),
+                                      );
+                                    },
+                                    child: Text(
+                                      "Criar usuário",
+                                      style: DockTheme.h2.copyWith(
+                                        color: DockColors.iron100,
+                                        fontSize: 16,
+                                        decoration: TextDecoration.underline,
                                       ),
                                     ),
                                   ),
