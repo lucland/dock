@@ -17,6 +17,8 @@ class InviteWidget extends StatelessWidget {
   final companyNameController = TextEditingController();
 
   void _showInviteModal(BuildContext context) {
+    print("getAllInvites");
+    print(projectId);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -24,7 +26,8 @@ class InviteWidget extends StatelessWidget {
           backgroundColor: DockColors.white,
           surfaceTintColor: DockColors.white,
           content: BlocProvider.value(
-            value: BlocProvider.of<InviteCubit>(context)..getAllInvites(),
+            value: BlocProvider.of<InviteCubit>(context)
+              ..getAllInvites(projectId),
             child: BlocBuilder<InviteCubit, InviteState>(
               builder: (context, state) {
                 final isSendButtonEnabled = emailController.text.isNotEmpty &&
@@ -71,7 +74,8 @@ class InviteWidget extends StatelessWidget {
                                 ? () {
                                     context.read<InviteCubit>().sendInvite(
                                         emailController.text,
-                                        companyNameController.text);
+                                        companyNameController.text,
+                                        projectId);
                                     emailController.clear();
                                     companyNameController.clear();
                                   }
@@ -154,16 +158,26 @@ class InviteWidget extends StatelessWidget {
     return InkWell(
       onTap: () => _showInviteModal(context),
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
           color: DockColors.iron100,
-          borderRadius: BorderRadius.circular(8),
         ),
-        child: Text(
-          'Convidar empresas parceiras para este projeto',
-          style: DockTheme.h2.copyWith(
-            color: DockColors.white,
-            fontSize: 14,
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.work_rounded,
+                color: DockColors.white,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Convidar empresas',
+                style: DockTheme.h3.copyWith(
+                    color: DockColors.white, fontWeight: FontWeight.w400),
+              ),
+            ],
           ),
         ),
       ),
@@ -219,9 +233,8 @@ class InviteWidget extends StatelessWidget {
               padding: const EdgeInsets.only(left: 70.0, right: 8.0),
               child: InkWell(
                 onTap: () {
-                  context
-                      .read<InviteCubit>()
-                      .resendInvite(invite.email, invite.thirdCompanyName);
+                  context.read<InviteCubit>().resendInvite(
+                      invite.email, invite.thirdCompanyName, projectId);
                 },
                 child: Container(
                   height: 40,
