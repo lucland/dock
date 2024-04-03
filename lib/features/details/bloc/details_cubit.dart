@@ -38,8 +38,12 @@ class DetailsCubit extends Cubit<DetailsState> {
       }
       for (var document in documents) {
         try {
-          final url = await storage.ref(document.path).getDownloadURL();
+          final url = await storage
+              .ref()
+              .child("documents/${document.id}/${document.type}")
+              .getDownloadURL();
           urls.add(url);
+          document.path = url;
         } catch (e) {
           emit(DetailsError('Failed to fetch user or documents: $e'));
           SimpleLogger.warning('Failed to fetch document: $e');
