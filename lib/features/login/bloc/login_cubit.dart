@@ -42,7 +42,9 @@ class LoginCubit extends Cubit<LoginState> {
         print('User data saved successfully');
 
         emit(LoginSuccess(
-            userId: response['user_id'], token: response['token']));
+            userId: response['user_id'],
+            token: response['token'],
+            isAdmin: response['is_admin']));
       } else {
         SimpleLogger.warning('Invalid response type: ${response.runtimeType}');
         emit(LoginError("Login failed: Invalid response type"));
@@ -56,7 +58,7 @@ class LoginCubit extends Cubit<LoginState> {
   void validateToken(String token) {
     if (token.isNotEmpty) {
       // Assuming token is valid for demonstration
-      emit(LoginSuccess(userId: '', token: token));
+      emit(LoginSuccess(userId: '', token: token, isAdmin: true));
     } else {
       emit(LoginError("Login failed: Token not found"));
     }
