@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dockcheck_web/features/projects/bloc/project_state.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import '../../../models/document.dart';
@@ -12,8 +13,9 @@ import '../../../services/local_storage_service.dart';
 class ProjectCubit extends Cubit<ProjectState> {
   final ProjectRepository projectRepository;
   final LocalStorageService localStorageService;
+  final FirebaseStorage storage;
 
-  ProjectCubit(this.projectRepository, this.localStorageService)
+  ProjectCubit(this.projectRepository, this.localStorageService, this.storage)
       : super(ProjectState());
   //retrieve the logged in userId from the local storage.getUserId Future method and set it into a variable
   Future<String?> get loggedInUser => localStorageService.getUserId();
@@ -26,11 +28,17 @@ class ProjectCubit extends Cubit<ProjectState> {
 
   //fetch all projects from the repository and emit the state with the projects
   void fetchProjects() async {
+    getLoggedUserId();
     print('fetchProjects');
     emit(state.copyWith(
-        isLoading: true, startDate: DateTime.now(), endDate: DateTime.now()));
+      isLoading: true,
+      startDate: DateTime.now(),
+      endDate: DateTime.now(),
+      projects: [],
+    ));
     try {
-      final projects = await projectRepository.getAllProjects();
+      String userId = await localStorageService.getUserId();
+      final projects = await projectRepository.getAllProjectsByUserId(userId);
       //reorder the projects to show the most recent first
       projects.sort((a, b) => b.dateStart.compareTo(a.dateStart));
       emit(state.copyWith(isLoading: false, projects: projects));
@@ -59,9 +67,24 @@ class ProjectCubit extends Cubit<ProjectState> {
   }
 
   //turn the File to base64, create a Document object and add to the state
-  void addDocument(PlatformFile file) {
+  void addDocument(PlatformFile file) async {
     //turn file to base64
     getLoggedUserId();
+
+    try {
+      final ref = storage.ref().child("documents/$loggedInUser/${file.name}");
+      //transform the PlatformFile to a File and upload it to the firebase storage
+      await ref.putData(file.bytes!);
+    } catch (e) {
+      print(e.toString());
+
+      if (!isClosed) {
+        emit(state.copyWith(
+          errorMessage: e.toString(),
+        ));
+      }
+    }
+
     final String base64 = base64Encode(file.bytes!);
 
     final updatedDocuments = List<Document>.from(state.documents)
@@ -111,15 +134,23 @@ class ProjectCubit extends Cubit<ProjectState> {
         companyId: "companyId",
         thirdCompaniesId: state.thirdCompaniesId,
         adminsId: [loggedUserId],
+        employeesId: [],
         areasId: ["areasId"],
         address: state.address,
         isDocking: state.isDocking,
         status: 'created',
+        userId: loggedUserId,
       );
       await projectRepository.createProject(project);
       emit(state.copyWith(isLoading: false, projectCreated: true));
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
+  }
+
+  //reset function
+  void reset() {
+    emit(ProjectState());
+    fetchProjects();
   }
 }
