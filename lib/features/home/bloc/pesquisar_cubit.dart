@@ -1,7 +1,9 @@
 import 'package:dockcheck_web/models/employee.dart';
 import 'package:dockcheck_web/models/project.dart';
+import 'package:dockcheck_web/models/user.dart';
 import 'package:dockcheck_web/repositories/employee_repository.dart';
 import 'package:dockcheck_web/repositories/project_repository.dart';
+import 'package:dockcheck_web/services/local_storage_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../utils/simple_logger.dart';
@@ -10,6 +12,7 @@ import 'pesquisar_state.dart';
 class PesquisarCubit extends Cubit<PesquisarState> {
   final EmployeeRepository employeeRepository;
   final ProjectRepository projectRepository;
+  final LocalStorageService localStorageService;
   List<Employee> allEmployee = [];
   List<Employee> filteredEmployee = [];
   bool isSearching = false;
@@ -18,22 +21,43 @@ class PesquisarCubit extends Cubit<PesquisarState> {
   @override
   bool isClosed = false;
 
-  PesquisarCubit(this.employeeRepository, this.projectRepository)
+  PesquisarCubit(
+      this.employeeRepository, this.projectRepository, this.localStorageService)
       : super(PesquisarInitial());
 
+  Future<String?> get loggedInUser => localStorageService.getUserId();
+  String loggedUserId = '';
+
+  //assign the logged in userId to the variable, knowing that it is a Future<String>
+  void getLoggedUserId() async {
+    loggedUserId = await loggedInUser ?? '';
+  }
+
+  //get signed in user number
+
   Future<void> fetchEmployees() async {
+    getLoggedUserId();
+
     print("fetchEmployees");
+    print(loggedUserId);
     SimpleLogger.info('Fetching employees');
     try {
       if (!isClosed) {
         emit(PesquisarLoading());
       }
 
-      allEmployee = await employeeRepository.getAllEmployees();
-      print(allEmployee.length);
+      String userId = await localStorageService.getUserId();
+      print(userId);
+      User? logged = await localStorageService.getUser();
 
+      allEmployee = await employeeRepository.getEmployeesByUserId(userId);
+      print(allEmployee.length);
+      bool isAd = true;
+      if (logged != null && logged.number == 0) {
+        isAd = false;
+      }
       if (!isClosed) {
-        emit(PesquisarLoaded(allEmployee));
+        emit(PesquisarLoaded(allEmployee, isAd));
       }
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
@@ -54,7 +78,9 @@ class PesquisarCubit extends Cubit<PesquisarState> {
 
       // Verifica se já carregou os usuários do banco de dados
       if (allEmployee.isEmpty) {
-        allEmployee = await employeeRepository.getAllEmployees();
+        String userId = await localStorageService.getUserId();
+
+        allEmployee = await employeeRepository.getEmployeesByUserId(userId);
       }
 
       filteredEmployee = allEmployee
@@ -62,8 +88,16 @@ class PesquisarCubit extends Cubit<PesquisarState> {
               employee.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
 
+      String userId = await localStorageService.getUserId();
+      print(userId);
+      User? logged = await localStorageService.getUser();
+      bool isAd = true;
+      if (logged != null && logged.number == 0) {
+        isAd = false;
+      }
+
       if (!isClosed) {
-        emit(PesquisarLoaded(filteredEmployee));
+        emit(PesquisarLoaded(filteredEmployee, isAd));
       }
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
@@ -73,13 +107,21 @@ class PesquisarCubit extends Cubit<PesquisarState> {
     }
   }
 
-  void _applySearchFilter() {
+  void _applySearchFilter() async {
     filteredEmployee = allEmployee
         .where((employee) =>
             employee.name.toLowerCase().contains(searchQuery.toLowerCase()))
         .toList();
 
-    emit(PesquisarLoaded(filteredEmployee));
+    String userId = await localStorageService.getUserId();
+    print(userId);
+    User? logged = await localStorageService.getUser();
+    bool isAd = true;
+    if (logged != null && logged.number == 0) {
+      isAd = false;
+    }
+
+    emit(PesquisarLoaded(filteredEmployee, isAd));
   }
 
   @override
