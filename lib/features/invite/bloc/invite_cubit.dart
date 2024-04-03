@@ -10,7 +10,7 @@ class InviteCubit extends Cubit<InviteState> {
 
   InviteCubit(this.inviteRepository) : super(InviteState());
 
-  void sendInvite(String email, String companyName) async {
+  void sendInvite(String email, String companyName, String projectId) async {
     emit(state.copyWith(isLoading: true, isInputEnabled: false));
     if (!_validateEmail(email)) {
       emit(state.copyWith(
@@ -25,11 +25,12 @@ class InviteCubit extends Cubit<InviteState> {
       thirdCompanyName: companyName,
       dateSent: DateTime.now(),
       viewed: false,
+      projectId: projectId,
     );
     final result = await inviteRepository.createInvite(invite);
     if (result != null) {
       emit(state.copyWith(isLoading: false, isInputEnabled: true));
-      getAllInvites();
+      getAllInvites(projectId);
     } else {
       emit(
           state.copyWith(error: 'Falha ao enviar o convite', isLoading: false));
@@ -45,11 +46,13 @@ class InviteCubit extends Cubit<InviteState> {
     emit(state.copyWith(isEmailValid: _validateEmail(email)));
   }
 
-  void getAllInvites() async {
+  void getAllInvites(String projectId) async {
+    print("getAllInvites");
+    print(projectId);
     if (state.isLoading == false) {
       (state.copyWith(isLoading: true));
     }
-    final invites = await inviteRepository.getAllInvites();
+    final invites = await inviteRepository.getInvitesByProjectId(projectId);
     //reorder the invites to show the most recent first
     invites.sort((a, b) => b.dateSent.compareTo(a.dateSent));
 
@@ -57,18 +60,18 @@ class InviteCubit extends Cubit<InviteState> {
         invites: invites, isLoading: false, isInputEnabled: true));
   }
 
-  void cancelInvite(String inviteId) async {
+  void cancelInvite(String inviteId, String projectId) async {
     emit(state.copyWith(isLoading: true));
     final result = await inviteRepository.cancelInvite(inviteId);
     if (result) {
-      getAllInvites();
+      getAllInvites(projectId);
     } else {
       emit(state.copyWith(
           error: 'Falha ao cancelar o convite', isLoading: false));
     }
   }
 
-  void resendInvite(String email, String companyName) async {
-    sendInvite(email, companyName);
+  void resendInvite(String email, String companyName, String projectId) async {
+    sendInvite(email, companyName, projectId);
   }
 }
