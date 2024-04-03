@@ -6,6 +6,7 @@ class Invite {
   String thirdCompanyName;
   DateTime dateSent;
   bool viewed;
+  String projectId;
 
   Invite({
     required this.id,
@@ -15,6 +16,7 @@ class Invite {
     required this.thirdCompanyName,
     required this.dateSent,
     required this.viewed,
+    required this.projectId,
   });
 
   factory Invite.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Invite {
       thirdCompanyName: json['thirdCompanyName'],
       dateSent: DateTime.parse(json['dateSent']),
       viewed: json['viewed'],
+      projectId: json['project_id'],
     );
   }
 
@@ -38,6 +41,7 @@ class Invite {
       'thirdCompanyName': thirdCompanyName,
       'dateSent': dateSent.toIso8601String(),
       'viewed': viewed,
+      'project_id': projectId,
     };
   }
 
@@ -49,6 +53,7 @@ class Invite {
     String? thirdCompanyName,
     DateTime? dateSent,
     bool? viewed,
+    String? projectId,
   }) {
     return Invite(
       id: id ?? this.id,
@@ -58,6 +63,7 @@ class Invite {
       thirdCompanyName: thirdCompanyName ?? this.thirdCompanyName,
       dateSent: dateSent ?? this.dateSent,
       viewed: viewed ?? this.viewed,
+      projectId: projectId ?? this.projectId,
     );
   }
 }

@@ -24,6 +24,14 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
+  //get method without token in header
+  Future<dynamic> getWithoutToken(String endpoint) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/$endpoint'),
+    );
+    return jsonDecode(response.body);
+  }
+
   Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
     final response = await http.post(
       Uri.parse('$baseUrl/$endpoint'),
@@ -38,6 +46,49 @@ class ApiService {
       String endpoint, Map<String, dynamic> data) async {
     try {
       print('postLogin');
+      print(baseUrl);
+      print(endpoint);
+      final response = await http.post(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers':
+              'Origin, Content-Type, Accept, Authorization, X-Request-With',
+        },
+        body: jsonEncode(data),
+      );
+
+      print('postLogin response: ${response.body}');
+
+      SimpleLogger.info(
+          "postLogin response: Status Code: ${response.statusCode}, Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        // Assuming the response body is a JSON object
+        return jsonDecode(response.body);
+      } else {
+        // Handling non-200 responses
+        print('postLogin response: ${response.body}');
+        return {
+          'error': 'Login failed',
+          'statusCode': response.statusCode,
+          'details': response.body
+        };
+      }
+    } catch (e) {
+      print(e.toString());
+      SimpleLogger.severe("Error in postLogin: ${e.toString()}");
+      return {'error': 'Exception in login', 'details': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> postUser(
+      String endpoint, Map<String, dynamic> data) async {
+    try {
+      print('postUser');
       print(baseUrl);
       print(endpoint);
       final response = await http.post(

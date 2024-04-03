@@ -17,7 +17,7 @@ class DockStrings {
   static const String usuarioEditadoComSucesso = 'Usuário editado com sucesso!';
   static const String bluetooth = 'Bluetooth';
   static const String conectar = 'Conectar';
-  static const String nome = "Nome do usuário";
+  static const String nome = "Nome do funcionário";
   static const String nomedovisitante = "Nome do visitante";
   static const String cpf = 'CPF';
   static const String email = 'Email';

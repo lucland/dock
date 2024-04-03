@@ -48,15 +48,15 @@ class EmployeeRepository {
   }
 
   //getLastEmployeeNumber
-  Future<String> getLastEmployeeNumber() async {
+  Future<int> getLastEmployeeNumber() async {
     try {
-      final data = await apiService.get('employees/lastnumber');
+      final data = await apiService.get('employees/number/lastnumber');
       print("Data fetched: ${data.toString()}");
-      return data['number'];
+      return data;
     } catch (e) {
       SimpleLogger.severe(
           'Failed to get last employee number: ${e.toString()}');
-      return '0'; // Return 0 as a fallback
+      return 0; // Return 0 as a fallback
     }
   }
 
@@ -80,6 +80,30 @@ class EmployeeRepository {
       SimpleLogger.info('Employee area updated successfully');
     } catch (e) {
       SimpleLogger.severe('Failed to update employee area: ${e.toString()}');
+    }
+  }
+
+  //get all employees by employee.user_id
+  Future<List<Employee>> getEmployeesByUserId(String userId) async {
+    try {
+      print("userId: $userId");
+      final data = await apiService.get('employees/user/$userId');
+      print("Data fetched: $data");
+      return (data as List).map((item) => Employee.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get employees by user id: ${e.toString()}');
+      return [];
+    }
+  }
+
+  //put method to /employees/approve/{id}:
+  Future<void> approveEmployee(String id) async {
+    try {
+      await apiService.put('employees/approve/$id', {});
+      SimpleLogger.info('Employee approved successfully');
+    } catch (e) {
+      SimpleLogger.severe('Failed to approve employee: ${e.toString()}');
     }
   }
 }

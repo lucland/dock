@@ -15,13 +15,15 @@ class UserRepository {
 
   Future<User> createUser(User user) async {
     try {
-      final data = await apiService.post('users/create', user.toJson());
+      final data = await apiService.postUser('users/create', user.toJson());
+      print('data: $data');
       //await localStorageService.insertOrUpdate(
       //  'users', User.fromJson(data).toJson(), 'id');
       return User.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create user: ${e.toString()}');
       user.status = 'pending_creation';
+      print(e.toString());
       //await localStorageService.insertOrUpdate('users', user.toJson(), 'id');
       return user;
     }
@@ -105,7 +107,7 @@ class UserRepository {
 
   // Get Last User Number
   Future<int> getLastUserNumber() async {
-    final data = await apiService.get('users/all/lastnumber');
+    final data = await apiService.getWithoutToken('users/getNextUserNumber');
     return int.parse(data.toString());
   }
 

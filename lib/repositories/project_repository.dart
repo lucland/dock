@@ -110,4 +110,44 @@ class ProjectRepository {
       return null;
     }
   }
+
+  //get all projects by project.user_id
+  Future<List<Project>> getAllProjectsByUserId(String userId) async {
+    try {
+      print("Getting all projects by user id: $userId");
+      final data = await apiService.get('projects/user/$userId');
+      print("Data projects fetched: $data");
+      return List<Project>.from(data.map((x) => Project.fromJson(x)));
+    } catch (e) {
+      SimpleLogger.severe('Failed to get all projects: ${e.toString()}');
+      return [];
+    }
+  }
+
+  //add employee to project router.put('/:id/removeEmployee', authenticateJWT, projectController.removeEmployeeFromProject) sending project_id as param and employee_id as body
+  Future<Project?> removeEmployeeFromProject(
+      String projectId, String employeeId) async {
+    try {
+      final data = await apiService.put(
+          'projects/$projectId/removeEmployee', {'employee_id': employeeId});
+      return Project.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to remove employee from project: ${e.toString()}');
+      return null;
+    }
+  }
+
+  //add employee to project router.put('/:id/addEmployee', authenticateJWT, projectController.addEmployeeToProject) sending project_id as param and employee_id as body
+  Future<Project?> addEmployeeToProject(
+      String projectId, String employeeId) async {
+    try {
+      final data = await apiService
+          .put('projects/$projectId/addEmployee', {'employee_id': employeeId});
+      return Project.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to add employee to project: ${e.toString()}');
+      return null;
+    }
+  }
 }

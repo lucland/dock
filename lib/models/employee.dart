@@ -18,6 +18,7 @@ class Employee {
   String status;
   DateTime createdAt;
   DateTime updatedAt;
+  String userId;
 
   Employee({
     required this.id,
@@ -39,6 +40,7 @@ class Employee {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
+    required this.userId,
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) {
@@ -73,6 +75,7 @@ class Employee {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
           : DateTime.now(),
+      userId: json['user_id'] ?? '',
     );
   }
 
@@ -97,6 +100,7 @@ class Employee {
       'status': status,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'user_id': userId,
     };
   }
 
@@ -120,6 +124,7 @@ class Employee {
     String? status,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? userId,
   }) {
     return Employee(
       id: id ?? this.id,
@@ -141,6 +146,7 @@ class Employee {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      userId: userId ?? this.userId,
     );
   }
 }

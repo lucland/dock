@@ -76,11 +76,13 @@ class LocalStorageService {
     await _secureBox!.delete('user_id');
   }
 
-  Future<String?> getUserId() async {
+  Future<String> getUserId() async {
+    print("getUserId from local storage");
     await _ensureBoxIsOpen();
     SimpleLogger.info("Getting userId");
     String? userId = _secureBox!.get('user_id');
-    return userId;
+    print(userId);
+    return userId ?? '';
   }
 
   Future<void> saveUsername(String username) async {

@@ -7,10 +7,12 @@ class Project {
   String companyId;
   List<String> thirdCompaniesId;
   List<String> adminsId;
+  List<String> employeesId;
   List<String> areasId;
   String address;
   bool isDocking;
   String status;
+  String userId;
 
   Project({
     required this.id,
@@ -21,10 +23,12 @@ class Project {
     required this.companyId,
     required this.thirdCompaniesId,
     required this.adminsId,
+    required this.employeesId,
     required this.areasId,
     required this.address,
     required this.isDocking,
     required this.status,
+    required this.userId,
   });
 
   factory Project.fromJson(Map<String, dynamic> json) {
@@ -37,10 +41,12 @@ class Project {
       companyId: json['company_id'],
       thirdCompaniesId: List<String>.from(json['third_companies_id']),
       adminsId: List<String>.from(json['admins_id']),
+      employeesId: List<String>.from(json['employees_id']),
       areasId: List<String>.from(json['areas_id']),
       address: json['address'],
       isDocking: json['is_docking'],
       status: json['status'],
+      userId: json['user_id'],
     );
   }
 
@@ -54,10 +60,12 @@ class Project {
       'company_id': companyId,
       'third_companies_id': thirdCompaniesId,
       'admins_id': adminsId,
+      'employees_id': employeesId,
       'areas_id': areasId,
       'address': address,
       'is_docking': isDocking,
       'status': status,
+      'user_id': userId,
     };
   }
 
@@ -70,10 +78,12 @@ class Project {
     String? companyId,
     List<String>? thirdCompaniesId,
     List<String>? adminsId,
+    List<String>? employeesId,
     List<String>? areasId,
     String? address,
     bool? isDocking,
     String? status,
+    String? userId,
   }) {
     return Project(
       id: id ?? this.id,
@@ -84,10 +94,12 @@ class Project {
       companyId: companyId ?? this.companyId,
       thirdCompaniesId: thirdCompaniesId ?? this.thirdCompaniesId,
       adminsId: adminsId ?? this.adminsId,
+      employeesId: employeesId ?? this.employeesId,
       areasId: areasId ?? this.areasId,
       address: address ?? this.address,
       isDocking: isDocking ?? this.isDocking,
       status: status ?? this.status,
+      userId: userId ?? this.userId,
     );
   }
 }

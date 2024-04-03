@@ -59,4 +59,16 @@ class InviteRepository {
       return false;
     }
   }
+
+  //get all invites by invites.project_id
+  Future<List<Invite>> getInvitesByProjectId(String projectId) async {
+    try {
+      final data = await apiService.get('invites/project/$projectId');
+      return (data as List).map((item) => Invite.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get invites by project id: ${e.toString()}');
+      return [];
+    }
+  }
 }

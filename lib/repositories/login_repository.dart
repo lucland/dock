@@ -65,6 +65,7 @@ class LoginRepository {
     await apiService.localStorageService.saveToken(userData['token']);
     await apiService.localStorageService
         .saveUserId(userData['user_id'].toString());
+    print(userData['user_id'].toString());
     // Store other user data as needed
   }
 

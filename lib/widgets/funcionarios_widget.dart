@@ -140,7 +140,7 @@ class FuncionariosWidget extends StatelessWidget {
                             width: 8,
                           ),
                           Text(
-                            "Usuário com documentos em dia e atrelado a um projeto",
+                            "Usuário com documentos em dia e aprovado a um projeto",
                             overflow: TextOverflow.ellipsis,
                             style: DockTheme.h2.copyWith(
                               color: DockColors.iron80,
@@ -160,7 +160,7 @@ class FuncionariosWidget extends StatelessWidget {
                             width: 8,
                           ),
                           Text(
-                            "Usuário com documentos em dia e sem atrelamento a um projeto",
+                            "Usuário atrelado a um projeto pendente de aprovação",
                             overflow: TextOverflow.ellipsis,
                             style: DockTheme.h2.copyWith(
                                 color: DockColors.iron80,
@@ -271,8 +271,8 @@ class FuncionariosWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width *
                 0.5, // 50% width of the screen
             child: DetailsView(
-                employeeId:
-                    employee.id), // Assuming Details widget takes a user as a parameter
+                employeeId: employee
+                    .id), // Assuming Details widget takes a user as a parameter
           ),
         );
       },
@@ -282,13 +282,13 @@ class FuncionariosWidget extends StatelessWidget {
   }
 
   Widget _buildLeadingIcon(Employee employee) {
-    if (employee.isBlocked) {
+    if (employee.isBlocked && !employee.documentsOk) {
       return const Icon(
         Icons.circle,
         color: DockColors.danger100,
         size: 10,
       );
-    } else if (employee.documentsOk) {
+    } else if (employee.documentsOk && !employee.isBlocked) {
       return const Icon(
         Icons.circle,
         color: DockColors.success100,
