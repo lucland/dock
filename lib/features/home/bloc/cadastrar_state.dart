@@ -16,11 +16,12 @@ class CadastrarState {
   final List<Document> documents;
   final Picture picture;
   final String selectedNr;
+  final bool canCreate;
 
   CadastrarState({
     this.numero = 0,
     required this.employee,
-    this.isLoading = true,
+    this.isLoading = false,
     this.errorMessage,
     required this.event,
     this.employeeCreated = false,
@@ -29,6 +30,7 @@ class CadastrarState {
     this.documents = const [],
     required this.picture,
     this.selectedNr = '',
+    this.canCreate = false,
   });
 
   CadastrarState copyWith({
@@ -43,6 +45,7 @@ class CadastrarState {
     List<Document>? documents,
     Picture? picture,
     String? selectedNr,
+    bool? canCreate,
   }) {
     return CadastrarState(
       numero: numero ?? this.numero,
@@ -56,6 +59,7 @@ class CadastrarState {
       documents: documents ?? this.documents,
       picture: picture ?? this.picture,
       selectedNr: selectedNr ?? this.selectedNr,
+      canCreate: canCreate ?? this.canCreate,
     );
   }
 }
