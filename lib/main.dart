@@ -1,3 +1,4 @@
+import 'package:dockcheck_web/features/create/bloc/create_cubit.dart';
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
 import 'package:dockcheck_web/features/home/home.dart';
 import 'package:dockcheck_web/features/invite/bloc/invite_cubit.dart';
@@ -15,6 +16,7 @@ import 'features/home/bloc/cadastrar_cubit.dart';
 import 'features/login/bloc/login_cubit.dart';
 import 'features/login/login.dart';
 import 'features/projects/bloc/project_cubit.dart';
+import 'features/projects/bloc/project_details_cubit.dart';
 import 'repositories/area_repository.dart';
 import 'repositories/authorization_repository.dart';
 import 'repositories/beacon_repository.dart';
@@ -67,13 +69,18 @@ void main() async {
 
   var loginCubit =
       LoginCubit(loginRepository, userRepository, localStorageService);
-  var pesquisarCUbit = PesquisarCubit(employeeRepository, projectRepository);
+  var pesquisarCUbit = PesquisarCubit(
+      employeeRepository, projectRepository, localStorageService);
   var cadastrarCubit = CadastrarCubit(employeeRepository, localStorageService,
       eventRepository, pictureRepository, documentRepository, storage);
   var detailsCubit = DetailsCubit(
       employeeRepository, documentRepository, localStorageService, storage);
-  var projectCubit = ProjectCubit(projectRepository, localStorageService);
+  var projectCubit =
+      ProjectCubit(projectRepository, localStorageService, storage);
   var inviteCubit = InviteCubit(inviteRepository);
+  var createCubit = CreateCubit(userRepository);
+  var projectDetailsCubit = ProjectDetailsCubit(
+      employeeRepository, projectRepository, localStorageService, storage);
 
   runApp(
     MultiBlocProvider(
@@ -102,6 +109,8 @@ void main() async {
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
         BlocProvider<ProjectCubit>(create: (_) => projectCubit),
         BlocProvider<InviteCubit>(create: (_) => inviteCubit),
+        BlocProvider<CreateCubit>(create: (_) => createCubit),
+        BlocProvider<ProjectDetailsCubit>(create: (_) => projectDetailsCubit),
         Provider(create: (_) => storage),
       ],
       child: MyApp(),
