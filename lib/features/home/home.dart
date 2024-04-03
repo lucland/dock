@@ -1,4 +1,5 @@
 import 'package:dockcheck_web/features/projects/projects.dart';
+import 'package:dockcheck_web/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,15 +12,15 @@ import '../login/login.dart';
 import 'bloc/pesquisar_cubit.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  bool isAdmin;
+  Home({super.key, required this.isAdmin});
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  String selectedPage = 'projetos';
-
+  String selectedPage = 'funcionarios';
   @override
   Widget build(BuildContext context) {
     context.read<PesquisarCubit>().fetchEmployees();
@@ -45,46 +46,48 @@ class _HomeState extends State<Home> {
                     const SizedBox(
                       height: 24,
                     ),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          selectedPage = 'projetos';
-                        });
-                      },
-                      child: Container(
-                        color: selectedPage == 'projetos'
-                            ? DockColors.background
-                            : DockColors.iron100,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 4.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.anchor,
-                                color: selectedPage == 'projetos'
-                                    ? DockColors.iron100
-                                    : DockColors.background,
-                                size: 20,
-                              ),
-                              const SizedBox(
-                                width: 16,
-                              ),
-                              Text(
-                                'Projetos',
-                                overflow: TextOverflow.ellipsis,
-                                style: DockTheme.h2.copyWith(
-                                    color: selectedPage == 'projetos'
-                                        ? DockColors.iron100
-                                        : DockColors.background,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ],
+                    if (widget.isAdmin) ...[
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedPage = 'projetos';
+                          });
+                        },
+                        child: Container(
+                          color: selectedPage == 'projetos'
+                              ? DockColors.background
+                              : DockColors.iron100,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 4.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.anchor,
+                                  color: selectedPage == 'projetos'
+                                      ? DockColors.iron100
+                                      : DockColors.background,
+                                  size: 20,
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                Text(
+                                  'Projetos',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: DockTheme.h2.copyWith(
+                                      color: selectedPage == 'projetos'
+                                          ? DockColors.iron100
+                                          : DockColors.background,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                     InkWell(
                       onTap: () {
                         setState(() {
@@ -255,7 +258,7 @@ class _HomeState extends State<Home> {
               ],
             ),
           } else if (selectedPage == 'projetos') ...{
-            const Projects(),
+            Expanded(child: Projects()),
           }
         ],
       ),
