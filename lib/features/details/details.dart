@@ -40,6 +40,7 @@ class DetailsView extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(8.0),
+                  width: double.infinity,
                   color: DockColors.iron100,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,6 +73,7 @@ class DetailsView extends StatelessWidget {
   Widget _buildDocumentsCard(List<Document> documents, Employee employee,
       BuildContext context, List<String> urls) {
     return Container(
+      width: double.infinity,
       color: DockColors.white,
       height: MediaQuery.of(context).size.height,
       child: Padding(
@@ -124,18 +126,26 @@ class DetailsView extends StatelessWidget {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        document.type,
-                                        style: DockTheme.h2.copyWith(
-                                            color: DockColors.iron100,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16),
+                                      Flexible(
+                                        flex: 5,
+                                        child: Text(
+                                          document.type,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: DockTheme.h2.copyWith(
+                                              color: DockColors.iron100,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16),
+                                        ),
                                       ),
-                                      Text(
-                                        'Validade: ${Formatter.formatDateTime(document.expirationDate)}',
-                                        style: DockTheme.h2.copyWith(
-                                            color: DockColors.iron100,
-                                            fontSize: 16),
+                                      Flexible(
+                                        flex: 5,
+                                        child: Text(
+                                          'Validade: ${Formatter.formatDateTime(document.expirationDate)}',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: DockTheme.h2.copyWith(
+                                              color: DockColors.iron100,
+                                              fontSize: 16),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -144,10 +154,11 @@ class DetailsView extends StatelessWidget {
                                   //download container inkwell button with icon
                                   InkWell(
                                     onTap: () {
-                                      //download the document from state.urls where the index is the same as the document index
-                                      window.open(
-                                          urls[documents.indexOf(document)],
-                                          '_blank');
+                                      //convert document.url download to a pdf
+                                      final url = document.path;
+                                      final anchor = AnchorElement(href: url)
+                                        ..setAttribute('download', '');
+                                      anchor.click();
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(8.0),
