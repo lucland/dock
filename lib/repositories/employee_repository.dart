@@ -21,8 +21,9 @@ class EmployeeRepository {
 
   Future<void> blockEmployee(String id, String blockReason) async {
     try {
+      print("blockReason: $blockReason, id: $id");
       await apiService
-          .post('employees/$id/block', {'block_reason': blockReason});
+          .put('employees/block/$id', {'block_reason': blockReason});
       SimpleLogger.info('Employee blocked successfully');
     } catch (e) {
       SimpleLogger.severe('Failed to block employee: ${e.toString()}');
