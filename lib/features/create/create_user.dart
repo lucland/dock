@@ -117,7 +117,7 @@ class CreateUser extends StatelessWidget {
                                     },
                                   ),
                                   TextInputWidget(
-                                    title: 'CPF',
+                                    title: 'CPF / CNPJ',
                                     keyboardType: TextInputType.number,
                                     controller: _cpfController,
                                     onChanged: (value) {

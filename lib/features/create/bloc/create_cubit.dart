@@ -47,7 +47,7 @@ class CreateCubit extends Cubit<CreateState> {
         cpf: cpf,
         companyId: empresa,
         role: role,
-        number: 0,
+        number: 2,
         bloodType: "O+",
         isBlocked: false,
         blockReason: "-",

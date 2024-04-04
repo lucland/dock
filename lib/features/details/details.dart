@@ -114,7 +114,33 @@ class DetailsView extends StatelessWidget {
                   children: [
                     Text(
                       'Documentos',
-                      style: DockTheme.h2.copyWith(color: DockColors.iron100),
+                      style: DockTheme.h2.copyWith(
+                          color: DockColors.iron100,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '* Para visualizar os documentos, clique no botão "Baixar" ',
+                          style: DockTheme.h2.copyWith(
+                              color: DockColors.danger110,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          'e adicione ".pdf" ao final do nome do arquivo.',
+                          style: DockTheme.h2.copyWith(
+                              color: DockColors.danger110,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     Column(
@@ -127,24 +153,74 @@ class DetailsView extends StatelessWidget {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Flexible(
-                                        flex: 5,
-                                        child: Text(
-                                          document.type,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: DockTheme.h2.copyWith(
-                                              color: DockColors.iron100,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16),
+                                        flex: 7,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              document.type,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: DockTheme.h2.copyWith(
+                                                  color: DockColors.iron100,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 16),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  'Validade: ',
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: DockTheme.h2.copyWith(
+                                                      color: DockColors.iron100,
+                                                      fontSize: 14),
+                                                ),
+                                                Text(
+                                                  Formatter.formatDateTime(
+                                                      document.expirationDate),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: DockTheme.h2.copyWith(
+                                                      color: document
+                                                              .expirationDate
+                                                              .isBefore(DateTime
+                                                                  .now())
+                                                          ? DockColors.danger100
+                                                          : DockColors.iron100,
+                                                      fontSize: 14),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
                                       Flexible(
-                                        flex: 5,
-                                        child: Text(
-                                          'Validade: ${Formatter.formatDateTime(document.expirationDate)}',
-                                          overflow: TextOverflow.ellipsis,
-                                          style: DockTheme.h2.copyWith(
+                                        flex: 3,
+                                        child: InkWell(
+                                          onTap: () {
+                                            //convert document.url download to a pdf
+                                            final url = document.path;
+                                            final anchor = AnchorElement(
+                                                href: url)
+                                              ..setAttribute('download', '');
+                                            anchor.click();
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8.0),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              border: Border.all(
+                                                  color: DockColors.iron100,
+                                                  width: 1),
+                                            ),
+                                            child: const Icon(
+                                              Icons.download_rounded,
                                               color: DockColors.iron100,
-                                              fontSize: 16),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -152,37 +228,7 @@ class DetailsView extends StatelessWidget {
 
                                   const SizedBox(height: 8),
                                   //download container inkwell button with icon
-                                  InkWell(
-                                    onTap: () {
-                                      //convert document.url download to a pdf
-                                      final url = document.path;
-                                      final anchor = AnchorElement(href: url)
-                                        ..setAttribute('download', '');
-                                      anchor.click();
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
-                                        color: DockColors.iron100,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.download,
-                                            color: Colors.white,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            'Baixar',
-                                            style: DockTheme.h3.copyWith(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w400),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: const Divider(

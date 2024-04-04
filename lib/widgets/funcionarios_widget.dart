@@ -253,7 +253,9 @@ class FuncionariosWidget extends StatelessWidget {
         visualDensity: VisualDensity.compact,
         horizontalTitleGap: 0,
         leading: _buildLeadingIcon(employee),
-        subtitle: Text(employee.cpf.toString()),
+        subtitle: Text(
+          "${employee.role} - ${employee.thirdCompanyId}",
+        ),
         onTap: () {
           _openRightSideModal(context, employee);
         },

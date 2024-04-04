@@ -237,7 +237,7 @@ class Projects extends StatelessWidget {
                                   style: DockTheme.h2.copyWith(
                                     color: DockColors.iron100,
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 14,
+                                    fontSize: 16,
                                   ),
                                 ),
                                 SizedBox(height: 8),
@@ -245,8 +245,8 @@ class Projects extends StatelessWidget {
                                   'Local: ' + project.address,
                                   style: DockTheme.h2.copyWith(
                                     color: DockColors.slate110,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
                                   ),
                                 ),
                                 //text saying the count of project.employeesId and below a inkwell container button with "Visualiizar equipe" text

@@ -20,13 +20,13 @@ dependencies:
   flutter_svg: ^2.0.9
   localstorage: ^4.0.1+4
   logging: ^1.2.0
-  firebase_core: ^2.12.1
+  firebase_core: ^2.28.0
   clock: ^1.1.1
   hive: ^2.2.3
-  file_picker: ^6.1.1
+  file_picker: ^8.0.0+1
   image_picker_for_web: ^3.0.2
   cross_file: ^0.3.3+8
-  firebase_storage: ^11.6.9
+  firebase_storage: ^11.7.0
   flutter_masked_text2: ^0.9.1
 
 dev_dependencies:

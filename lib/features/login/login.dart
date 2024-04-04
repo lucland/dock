@@ -38,6 +38,14 @@ class Login extends StatelessWidget {
                   duration: Duration(seconds: 3),
                 ),
               );
+            } else if (state is LoginLoading) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Carregando...'),
+                  backgroundColor: DockColors.iron100,
+                  duration: Duration(seconds: 3),
+                ),
+              );
             }
           },
           child: Column(

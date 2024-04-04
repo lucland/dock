@@ -184,6 +184,44 @@ class _HomeState extends State<Home> {
                         color: DockColors.white,
                       ),
                       Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 8.0),
+                        child: Text(
+                          'Suporte',
+                          style: DockTheme.h2.copyWith(
+                            color: DockColors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 0.0, horizontal: 8.0),
+                        child: Text(
+                          'Email: lucas.vsc@gmail.com',
+                          style: DockTheme.h2.copyWith(
+                            color: DockColors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Wpp: +55 21 98939-5063',
+                          style: DockTheme.h2.copyWith(
+                            color: DockColors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      const Divider(
+                        color: DockColors.white,
+                      ),
+                      Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           'Versão 1.0.0',

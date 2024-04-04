@@ -166,8 +166,10 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       final ref = storage.ref().child("documents/$docId/$type");
       //transform the PlatformFile to a File and upload it to the firebase storage
       await ref.putData(file.bytes!);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       print(e.toString());
+      print(e.message.toString());
+      print(e.code.toString());
       SimpleLogger.warning('Error cadastrar_cubit addDocument: $e');
       if (!isClosed) {
         emit(state.copyWith(
@@ -472,11 +474,10 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               errorMessage: e.toString(),
             ));
           }
-        } finally {
-          if (!isClosed) {
-            createEmployee();
-          }
         }
+      }
+      if (!isClosed) {
+        createEmployee();
       }
     }
   }
@@ -485,20 +486,25 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     String userId = await localStorageService.getUserId();
     var numero = await employeeRepository.getLastEmployeeNumber();
     print(numero);
+    //if there are any expiring date of any document that is before today, turn a boolean false
+    bool isExpired = state.documents.any((element) =>
+        element.expirationDate.isBefore(DateTime.now()) ||
+        element.expirationDate.isAtSameMomentAs(DateTime.now()));
     //parse the numero string to int
     if (!isClosed) {
       final employee = state.employee.copyWith(
-          documentsOk: true,
+          documentsOk: !isExpired,
           userId: userId,
           isBlocked: true,
           number: numero + 1,
-          id: const Uuid().v1(),
           status: 'created');
       emit(state.copyWith(employee: employee));
       try {
         await employeeRepository.createEmployee(state.employee);
         SimpleLogger.info('Employee created');
         print('Employee created');
+        //clear the state
+        resetState();
         emit(state.copyWith(employeeCreated: true));
       } catch (e) {
         SimpleLogger.warning('Error cadastrar_cubit createEmployee: $e');
