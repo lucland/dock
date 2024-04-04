@@ -161,9 +161,14 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       PlatformFile file, DateTime expirationDate, String type) async {
     emit(state.copyWith(isLoading: true));
     String docId = const Uuid().v4();
+    String fileName = "";
+    //fileName is type + "-" + employee.name + "-" + employee.thirdCompanyId + "-" + expirationDate + ".pdf" with the expirationDate formatted as yyyy-MM-dd
+    fileName =
+        "$type-${state.employee.name}-${state.employee.thirdCompanyId}-${expirationDate.toString().substring(0, 10)}.pdf";
 //send the file to the firebase storage
     try {
-      final ref = storage.ref().child("documents/$docId/$type");
+      final ref =
+          storage.ref().child("documents/${state.employee.id}/$fileName");
       //transform the PlatformFile to a File and upload it to the firebase storage
       await ref.putData(file.bytes!);
     } on FirebaseException catch (e) {
