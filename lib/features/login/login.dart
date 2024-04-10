@@ -19,142 +19,154 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: DockColors.background,
-        body: BlocListener<LoginCubit, LoginState>(
-          listener: (context, state) {
-            if (state is LoginSuccess) {
+      backgroundColor: DockColors.background,
+      body: BlocListener<LoginCubit, LoginState>(
+        listener: (context, state) {
+          if (state is LoginSuccess) {
+            // Check if login was successful before navigating to the home page
+            if (state.token.isNotEmpty) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Home(
-                          isAdmin: state.isAdmin,
-                        )),
+                  builder: (context) => Home(
+                    isAdmin: state.isAdmin,
+                  ),
+                ),
               );
-            } else if (state is LoginError) {
+            } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Erro ao fazer login'),
+                  content: Text('Token not found'),
                   backgroundColor: DockColors.danger100,
                   duration: Duration(seconds: 3),
                 ),
               );
-            } else if (state is LoginLoading) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Carregando...'),
-                  backgroundColor: DockColors.iron100,
-                  duration: Duration(seconds: 3),
-                ),
-              );
             }
-          },
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 3,
-                child: Container(
-                  color: DockColors.iron100,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Image.asset('assets/svg/logo_dock_check.png'),
-                    ),
+          } else if (state is LoginError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Erro ao fazer login'),
+                backgroundColor: DockColors.danger100,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          } else if (state is LoginLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Carregando...'),
+                backgroundColor: DockColors.iron100,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        },
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 3,
+              child: Container(
+                color: DockColors.iron100,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Image.asset('assets/svg/logo_dock_check.png'),
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 60,
-              ),
-              Expanded(
-                flex: 7,
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: DockColors.white,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          padding: const EdgeInsets.all(16.0),
-                          width: 700,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextInputWidget(
-                                    title: 'Usuário',
-                                    keyboardType: TextInputType.emailAddress,
-                                    controller: _usernameController,
-                                  ),
-                                  TextInputWidget(
-                                    title: 'Senha',
-                                    keyboardType: TextInputType.text,
-                                    controller: _passwordController,
-                                    isPassword: true,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: InkWell(
-                                      onTap: () {
-                                        BlocProvider.of<LoginCubit>(context)
-                                            .logIn(
-                                          _usernameController.text,
-                                          _passwordController.text,
-                                        );
-                                      },
-                                      child: Container(
-                                        width: 784,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          color: DockColors.iron100,
-                                        ),
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Text(
-                                          DockStrings.login,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: DockTheme.headLine.copyWith(
-                                              color: DockColors.white),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  //text with underline and inkwell to navigate to the create user page
-                                  InkWell(
+            ),
+            const SizedBox(
+              height: 60,
+            ),
+            Expanded(
+              flex: 7,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: DockColors.white,
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: const EdgeInsets.all(16.0),
+                        width: 700,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                TextInputWidget(
+                                  title: 'Usuário',
+                                  keyboardType: TextInputType.emailAddress,
+                                  controller: _usernameController,
+                                ),
+                                TextInputWidget(
+                                  title: 'Senha',
+                                  keyboardType: TextInputType.text,
+                                  controller: _passwordController,
+                                  isPassword: true,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: InkWell(
                                     onTap: () {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => CreateUser()),
+                                      BlocProvider.of<LoginCubit>(context)
+                                          .logIn(
+                                        _usernameController.text,
+                                        _passwordController.text,
                                       );
                                     },
-                                    child: Text(
-                                      "Criar usuário",
-                                      style: DockTheme.h2.copyWith(
+                                    child: Container(
+                                      width: 784,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
                                         color: DockColors.iron100,
-                                        fontSize: 16,
-                                        decoration: TextDecoration.underline,
+                                      ),
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Text(
+                                        DockStrings.login,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: DockTheme.headLine
+                                            .copyWith(color: DockColors.white),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => CreateUser()),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Criar usuário",
+                                    style: DockTheme.h2.copyWith(
+                                      color: DockColors.iron100,
+                                      fontSize: 16,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
