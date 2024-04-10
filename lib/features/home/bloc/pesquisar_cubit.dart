@@ -1,9 +1,9 @@
 import 'package:dockcheck_web/models/employee.dart';
-import 'package:dockcheck_web/models/project.dart';
 import 'package:dockcheck_web/models/user.dart';
 import 'package:dockcheck_web/repositories/employee_repository.dart';
 import 'package:dockcheck_web/repositories/project_repository.dart';
 import 'package:dockcheck_web/services/local_storage_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../utils/simple_logger.dart';
@@ -38,8 +38,12 @@ class PesquisarCubit extends Cubit<PesquisarState> {
   Future<void> fetchEmployees() async {
     getLoggedUserId();
 
-    print("fetchEmployees");
-    print(loggedUserId);
+    if (kDebugMode) {
+      print("fetchEmployees");
+    }
+    if (kDebugMode) {
+      print(loggedUserId);
+    }
     SimpleLogger.info('Fetching employees');
     try {
       if (!isClosed) {
@@ -47,11 +51,15 @@ class PesquisarCubit extends Cubit<PesquisarState> {
       }
 
       String userId = await localStorageService.getUserId();
-      print(userId);
+      if (kDebugMode) {
+        print(userId);
+      }
       User? logged = await localStorageService.getUser();
 
       allEmployee = await employeeRepository.getEmployeesByUserId(userId);
-      print(allEmployee.length);
+      if (kDebugMode) {
+        print(allEmployee.length);
+      }
       bool isAd = true;
       if (logged != null && logged.number == 0) {
         isAd = false;
@@ -89,7 +97,9 @@ class PesquisarCubit extends Cubit<PesquisarState> {
           .toList();
 
       String userId = await localStorageService.getUserId();
-      print(userId);
+      if (kDebugMode) {
+        print(userId);
+      }
       User? logged = await localStorageService.getUser();
       bool isAd = true;
       if (logged != null && logged.number == 0) {
@@ -107,7 +117,7 @@ class PesquisarCubit extends Cubit<PesquisarState> {
     }
   }
 
-  void _applySearchFilter() async {
+ /* void _applySearchFilter() async {
     filteredEmployee = allEmployee
         .where((employee) =>
             employee.name.toLowerCase().contains(searchQuery.toLowerCase()))
@@ -123,7 +133,7 @@ class PesquisarCubit extends Cubit<PesquisarState> {
 
     emit(PesquisarLoaded(filteredEmployee, isAd));
   }
-
+*/
   @override
   Future<void> close() async {
     if (!isClosed) {

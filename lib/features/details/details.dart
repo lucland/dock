@@ -1,11 +1,9 @@
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
-import 'dart:js';
 
 import 'package:dockcheck_web/features/details/bloc/details_cubit.dart';
 import 'package:dockcheck_web/models/employee.dart';
-import 'package:dockcheck_web/models/picture.dart';
 import 'package:dockcheck_web/utils/colors.dart';
-import 'package:dockcheck_web/utils/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/document.dart';
@@ -16,7 +14,7 @@ import '../../widgets/title_value_widget.dart';
 class DetailsView extends StatelessWidget {
   final String employeeId;
 
-  DetailsView({
+  const DetailsView({
     super.key,
     required this.employeeId,
   });
@@ -229,9 +227,9 @@ class DetailsView extends StatelessWidget {
                                   const SizedBox(height: 8),
                                   //download container inkwell button with icon
 
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: const Divider(
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Divider(
                                       color: DockColors.iron30,
                                       thickness: 1,
                                     ),

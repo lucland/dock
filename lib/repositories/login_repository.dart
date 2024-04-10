@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../services/api_service.dart';
 import '../utils/simple_logger.dart';
 
@@ -9,7 +11,9 @@ class LoginRepository {
   Future<Map<String, dynamic>> login(
       String username, String password, String role, String system) async {
     try {
-      print('login');
+      if (kDebugMode) {
+        print('login');
+      }
       final response = await apiService.postLogin(
         'login',
         {
@@ -36,7 +40,7 @@ class LoginRepository {
 
   Future<bool> logout() async {
     final userId = await apiService.localStorageService.getUserId();
-    if (userId == null || userId.isEmpty) {
+    if (userId.isEmpty) {
       SimpleLogger.warning("User ID is null or empty");
       return false;
     }

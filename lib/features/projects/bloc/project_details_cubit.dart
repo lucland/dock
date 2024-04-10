@@ -1,13 +1,7 @@
-import 'dart:convert';
-
-import 'package:dockcheck_web/features/projects/bloc/project_state.dart';
 import 'package:dockcheck_web/models/employee.dart';
 import 'package:dockcheck_web/repositories/employee_repository.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uuid/uuid.dart';
-import '../../../models/document.dart';
 import '../../../models/project.dart';
 import '../../../repositories/project_repository.dart';
 import '../../../services/local_storage_service.dart';

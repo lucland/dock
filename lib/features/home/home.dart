@@ -1,5 +1,4 @@
 import 'package:dockcheck_web/features/projects/projects.dart';
-import 'package:dockcheck_web/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../login/login.dart';
 import 'bloc/pesquisar_cubit.dart';
 
+// ignore: must_be_immutable
 class Home extends StatefulWidget {
   bool isAdmin;
   Home({super.key, required this.isAdmin});
@@ -296,7 +296,7 @@ class _HomeState extends State<Home> {
               ],
             ),
           } else if (selectedPage == 'projetos') ...{
-            Expanded(child: Projects()),
+            const Expanded(child: Projects()),
           }
         ],
       ),

@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:dockcheck_web/repositories/event_repository.dart';
 import 'package:dockcheck_web/repositories/picture_repository.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
@@ -114,7 +112,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         }
       } catch (e) {
         SimpleLogger.warning('Error during data synchronization: $e');
-        print(e.toString());
+        if (kDebugMode) {
+          print(e.toString());
+        }
         if (!isClosed) {
           emit(state.copyWith(
             isLoading: false,
@@ -128,13 +128,13 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   //updateAuthorizationType updating employee.area
   void updateAuthorizationType(String authorizationType) {
     final employee = state.employee.copyWith(area: authorizationType);
-    bool canCreate = state.picture.base64.isNotEmpty &&
+   /* bool canCreate = state.picture.base64.isNotEmpty &&
         state.documents.length >= 2 &&
         state.employee.cpf.isNotEmpty &&
         state.employee.name.isNotEmpty &&
         state.employee.email.isNotEmpty &&
         state.employee.thirdCompanyId.isNotEmpty;
-    state.employee.role.isNotEmpty;
+    state.employee.role.isNotEmpty;*/
     emit(state.copyWith(employee: employee));
     //  checkCadastroHabilitado();
   }
@@ -172,9 +172,11 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       //transform the PlatformFile to a File and upload it to the firebase storage
       await ref.putData(file.bytes!);
     } on FirebaseException catch (e) {
-      print(e.toString());
-      print(e.message.toString());
+      if (kDebugMode) {
+        print(e.toString());
+        print(e.message.toString());
       print(e.code.toString());
+      }
       SimpleLogger.warning('Error cadastrar_cubit addDocument: $e');
       if (!isClosed) {
         emit(state.copyWith(
@@ -193,14 +195,14 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         path: 'documents/$docId',
         status: 'pending',
       ));
-    bool canCreate = state.picture.base64.isNotEmpty &&
+   /* bool canCreate = state.picture.base64.isNotEmpty &&
         state.documents.length > 1 &&
         state.employee.cpf.isNotEmpty &&
         state.employee.name.isNotEmpty &&
         state.employee.name.isNotEmpty &&
         state.employee.email.isNotEmpty &&
         state.employee.thirdCompanyId.isNotEmpty;
-    state.employee.role.isNotEmpty;
+    state.employee.role.isNotEmpty;*/
 
     emit(state.copyWith(documents: updatedDocuments, isLoading: false));
     // checkCadastroHabilitado();
@@ -410,13 +412,17 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
     try {
       //await eventRepository.createEvent(event);
-      print('Event created');
+      if (kDebugMode) {
+        print('Event created');
+      }
       SimpleLogger.info('Event created');
       if (!isClosed) {
         createPicture();
       }
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
       SimpleLogger.warning('Error cadastrar_cubit createEvent: $e');
       if (!isClosed) {
         emit(state.copyWith(
@@ -439,13 +445,17 @@ class CadastrarCubit extends Cubit<CadastrarState> {
                 .copyWith(status: 'created', employeeId: state.employee.id)));
         try {
           await pictureRepository.createEmployeePicture(state.picture);
-          print(documentRepository);
+          if (kDebugMode) {
+            print(documentRepository);
+          }
           SimpleLogger.info('Picture created');
           if (!isClosed) {
             createDocuments();
           }
         } catch (e) {
-          print(e.toString());
+          if (kDebugMode) {
+            print(e.toString());
+          }
           SimpleLogger.warning('Error cadastrar_cubit createPicture: $e');
           if (!isClosed) {
             emit(state.copyWith(
@@ -459,7 +469,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   //create documents, for each Document in state.documents, create a document with DocumentRepository passing the document
   Future<void> createDocuments() async {
-    print("createDocuments");
+    if (kDebugMode) {
+      print("createDocuments");
+    }
     if (state.documents.isEmpty) {
       if (!isClosed) {
         createEmployee();
@@ -468,11 +480,15 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     if (!isClosed) {
       for (var document in state.documents) {
         try {
-          print('Creating document');
+          if (kDebugMode) {
+            print('Creating document');
+          }
           await documentRepository.createDocument(document);
           SimpleLogger.info('Document created');
         } catch (e) {
-          print(e.toString());
+          if (kDebugMode) {
+            print(e.toString());
+          }
           SimpleLogger.warning('Error cadastrar_cubit createDocuments: $e');
           if (!isClosed) {
             emit(state.copyWith(
@@ -490,7 +506,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   Future<void> createEmployee() async {
     String userId = await localStorageService.getUserId();
     var numero = await employeeRepository.getLastEmployeeNumber();
-    print(numero);
+    if (kDebugMode) {
+      print(numero);
+    }
     //if there are any expiring date of any document that is before today, turn a boolean false
     bool isExpired = state.documents.any((element) =>
         element.expirationDate.isBefore(DateTime.now()) ||
@@ -507,13 +525,17 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       try {
         await employeeRepository.createEmployee(state.employee);
         SimpleLogger.info('Employee created');
-        print('Employee created');
+        if (kDebugMode) {
+          print('Employee created');
+        }
         //clear the state
         resetState();
         emit(state.copyWith(employeeCreated: true));
       } catch (e) {
         SimpleLogger.warning('Error cadastrar_cubit createEmployee: $e');
-        print(e.toString());
+        if (kDebugMode) {
+          print(e.toString());
+        }
         if (!isClosed) {
           emit(state.copyWith(
             errorMessage: e.toString(),

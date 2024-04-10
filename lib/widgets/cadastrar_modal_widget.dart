@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:dockcheck_web/widgets/image_picker_widget.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
-import 'package:provider/provider.dart';
 
 import '../enums/nrs_enum.dart';
 import '../features/home/bloc/cadastrar_cubit.dart';
@@ -13,7 +11,6 @@ import '../features/home/bloc/cadastrar_state.dart';
 import '../utils/colors.dart';
 import '../utils/strings.dart';
 import '../utils/theme.dart';
-import 'calendar_picker_widget.dart';
 import 'text_input_widget.dart';
 
 class CadastrarModal extends StatelessWidget {
@@ -45,14 +42,20 @@ class CadastrarModal extends StatelessWidget {
 
     return BlocBuilder<CadastrarCubit, CadastrarState>(
       builder: (context, state) {
-        Future<void> _pickFile(BuildContext context, String type) async {
+        Future<void> pickFile(BuildContext context, String type) async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
             type: FileType.custom,
             allowedExtensions: ['pdf'],
           );
-          print("date pick");
-          print(type);
-          print(asoController.text);
+          if (kDebugMode) {
+            print("date pick");
+          }
+          if (kDebugMode) {
+            print(type);
+          }
+          if (kDebugMode) {
+            print(asoController.text);
+          }
           if (result != null) {
             final PlatformFile file = result.files.first;
             DateTime? expirationDate = await showDatePicker(
@@ -68,85 +71,46 @@ class CadastrarModal extends StatelessWidget {
             if (expirationDate != null) {
               switch (type) {
                 case "ASO":
-                  asoController.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  asoController.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-34":
-                  nr34Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr34Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-35 - TRABALHO EM ALTURA":
-                  nr35Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr35Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-10 - SEGURANÇA EM INSTALAÇÕES E SERVIÇOS EM ELETRICIDADE":
-                  nr10Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr10Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-37 - SEGURANÇA E SAÚDE EM PLATAFORMAS DE PETRÓLEO":
-                  nr37Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr37Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-38 - SEGURANÇA E SAÚDE NO TRABALHO NAS ATIVIDADES DE LIMPEZA URBANA E MANEJO DE RESÍDUOS SÓLIDOS":
-                  nr38Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr38Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-11 - TRANSPORTE, MOVIMENTAÇÃO, ARMAZENAGEM E MANUSEIO DE MATERIAIS":
-                  nr11Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr11Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-33 - SEGURANÇA E SAÚDE NO TRABALHO EM ESPAÇOS CONFINADOS":
-                  nr33Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr33Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "IRATA N1":
-                  irataN1Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  irataN1Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "IRATA N2":
-                  irataN2Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  irataN2Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "IRATA N3":
-                  irataN3Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  irataN3Controller.text = '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
               }
-              print(asoController.text);
-              print(expirationDate);
+              if (kDebugMode) {
+                print(asoController.text);
+              }
+              if (kDebugMode) {
+                print(expirationDate);
+              }
+              // ignore: use_build_context_synchronously
               context.read<CadastrarCubit>().addDocument(file, expirationDate,
                   type); // Trigger addDocument with the selected file and date
             }
@@ -458,7 +422,7 @@ class CadastrarModal extends StatelessWidget {
                                             ),
                                           ),
                                           onTap: () async {
-                                            _pickFile(context, "ASO");
+                                            pickFile(context, "ASO");
                                           },
                                         ),
                                       ),
@@ -467,7 +431,7 @@ class CadastrarModal extends StatelessWidget {
                                             const EdgeInsets.only(left: 8.0),
                                         child: InkWell(
                                           onTap: () =>
-                                              _pickFile(context, "ASO"),
+                                              pickFile(context, "ASO"),
                                           child: Container(
                                             decoration: BoxDecoration(
                                               color: DockColors.slate100,
@@ -566,7 +530,7 @@ class CadastrarModal extends StatelessWidget {
                                           ),
                                           readOnly: true,
                                           onTap: () async {
-                                            _pickFile(context, "NR-34");
+                                            pickFile(context, "NR-34");
                                           },
                                         ),
                                       ),
@@ -575,7 +539,7 @@ class CadastrarModal extends StatelessWidget {
                                             const EdgeInsets.only(left: 8.0),
                                         child: InkWell(
                                           onTap: () =>
-                                              _pickFile(context, "NR-34"),
+                                              pickFile(context, "NR-34"),
                                           child: Container(
                                             decoration: BoxDecoration(
                                               color: DockColors.slate100,
@@ -695,7 +659,7 @@ class CadastrarModal extends StatelessWidget {
                                             ),
                                             readOnly: true,
                                             onTap: () async {
-                                              _pickFile(context, nrType);
+                                              pickFile(context, nrType);
                                             },
                                           ),
                                         ),
@@ -704,7 +668,7 @@ class CadastrarModal extends StatelessWidget {
                                               const EdgeInsets.only(left: 8.0),
                                           child: InkWell(
                                             onTap: () =>
-                                                _pickFile(context, nrType),
+                                                pickFile(context, nrType),
                                             child: Container(
                                               decoration: BoxDecoration(
                                                 color: DockColors.slate100,
@@ -865,7 +829,7 @@ class CadastrarModal extends StatelessWidget {
                   );
                 }
               },
-              child: Text('Adicionar',
+              child: const Text('Adicionar',
                   style: TextStyle(
                       color: DockColors.success100,
                       fontWeight: FontWeight.bold)),

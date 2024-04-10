@@ -18,7 +18,7 @@ class InviteCubit extends Cubit<InviteState> {
       return;
     }
     Invite invite = Invite(
-      id: Uuid().v4(),
+      id: const Uuid().v4(),
       email: email,
       accepted: false,
       sent: true,
@@ -27,15 +27,10 @@ class InviteCubit extends Cubit<InviteState> {
       viewed: false,
       projectId: projectId,
     );
-    final result = await inviteRepository.createInvite(invite);
-    if (result != null) {
-      emit(state.copyWith(isLoading: false, isInputEnabled: true));
-      getAllInvites(projectId);
-    } else {
-      emit(
-          state.copyWith(error: 'Falha ao enviar o convite', isLoading: false));
+    await inviteRepository.createInvite(invite);
+    emit(state.copyWith(isLoading: false, isInputEnabled: true));
+    getAllInvites(projectId);
     }
-  }
 
   bool _validateEmail(String email) {
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');

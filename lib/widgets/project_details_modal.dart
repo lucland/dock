@@ -1,4 +1,3 @@
-import 'package:dockcheck_web/features/invite/invite.dart';
 import 'package:dockcheck_web/features/projects/bloc/project_details_cubit.dart';
 import 'package:dockcheck_web/features/projects/bloc/project_details_state.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../features/details/details.dart';
 import '../models/employee.dart';
-import '../models/project.dart';
 import '../utils/colors.dart';
 import '../utils/theme.dart';
 
@@ -193,8 +191,8 @@ class ProjectDetailsModal extends StatelessWidget {
                                                       ],
                                                     ),
                                                   ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
+                                                  const Padding(
+                                                    padding: EdgeInsets
                                                         .symmetric(
                                                         vertical: 4.0,
                                                         horizontal: 16),
