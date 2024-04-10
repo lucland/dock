@@ -1,9 +1,7 @@
 import 'package:dockcheck_web/features/create/bloc/create_cubit.dart';
 import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
-import 'package:dockcheck_web/features/home/home.dart';
 import 'package:dockcheck_web/features/invite/bloc/invite_cubit.dart';
 import 'package:dockcheck_web/firebase_options.dart';
-import 'package:dockcheck_web/models/project.dart';
 import 'package:dockcheck_web/utils/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -118,13 +116,16 @@ void main() async {
   );
 }
 
+// ignore: must_be_immutable
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
   //check if the user is logged in, if not, show the login page by checking if local storage has a token and a user id saved
   LocalStorageService localStorageService = LocalStorageService();
   bool isLoggedIn() {
+    // ignore: unrelated_type_equality_checks
     return localStorageService.getToken() != "" &&
+        // ignore: unrelated_type_equality_checks
         localStorageService.getUserId() != "";
   }
 
