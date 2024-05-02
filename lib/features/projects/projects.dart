@@ -1,8 +1,6 @@
-import 'package:dockcheck_web/features/home/bloc/pesquisar_cubit.dart';
 import 'package:dockcheck_web/features/invite/invite.dart';
 import 'package:dockcheck_web/features/projects/bloc/project_cubit.dart';
 import 'package:dockcheck_web/features/projects/bloc/project_state.dart';
-import 'package:dockcheck_web/models/employee.dart';
 import 'package:dockcheck_web/models/project.dart';
 import 'package:dockcheck_web/widgets/project_details_modal.dart';
 import 'package:dockcheck_web/widgets/project_modal_widget.dart';
@@ -11,8 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../utils/colors.dart';
 import '../../utils/theme.dart';
-import '../details/details.dart';
-import '../home/bloc/pesquisar_state.dart';
 
 class Projects extends StatelessWidget {
   const Projects({
@@ -203,7 +199,7 @@ class Projects extends StatelessWidget {
                                         style: DockTheme.h1.copyWith(
                                           color: DockColors.iron100,
                                         )),
-                                    Spacer(),
+                                    const Spacer(),
                                     //a DockColors.iron100 badge with slitghly rounded corners containing a white bold text with the project.isDocking value
                                     Container(
                                       padding: const EdgeInsets.all(8),
@@ -240,8 +236,9 @@ class Projects extends StatelessWidget {
                                     fontSize: 16,
                                   ),
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 Text(
+                                  // ignore: prefer_interpolation_to_compose_strings
                                   'Local: ' + project.address,
                                   style: DockTheme.h2.copyWith(
                                     color: DockColors.slate110,
@@ -258,7 +255,7 @@ class Projects extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     Flexible(
@@ -334,7 +331,7 @@ class Projects extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return ProjectModal();
+        return const ProjectModal();
       },
     );
     //call fetchProjects method after the modal is closed

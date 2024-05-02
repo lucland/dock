@@ -1,14 +1,11 @@
 import 'package:dockcheck_web/features/create/bloc/create_cubit.dart';
-import 'package:dockcheck_web/features/home/bloc/cadastrar_cubit.dart';
 import 'package:dockcheck_web/features/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../utils/colors.dart';
-import '../../utils/strings.dart';
 import '../../utils/theme.dart';
 import '../../widgets/text_input_widget.dart';
-import '../home/home.dart';
 
 class CreateUser extends StatelessWidget {
   CreateUser({super.key});

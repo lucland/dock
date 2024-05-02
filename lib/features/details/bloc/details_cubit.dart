@@ -1,13 +1,10 @@
 import 'package:dockcheck_web/models/employee.dart';
-import 'package:dockcheck_web/models/picture.dart';
 import 'package:dockcheck_web/repositories/document_repository.dart';
 import 'package:dockcheck_web/repositories/employee_repository.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/document.dart';
-import '../../../repositories/picture_repository.dart';
 import '../../../services/local_storage_service.dart';
 import '../../../utils/simple_logger.dart';
 

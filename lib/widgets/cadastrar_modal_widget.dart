@@ -1,6 +1,7 @@
 import 'package:dockcheck_web/models/employee.dart';
 import 'package:dockcheck_web/widgets/image_picker_widget.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
@@ -85,9 +86,15 @@ class CadastrarModal extends StatelessWidget {
             type: FileType.custom,
             allowedExtensions: ['pdf'],
           );
-          print("date pick");
-          print(type);
-          print(asoController.text);
+          if (kDebugMode) {
+            print("date pick");
+          }
+          if (kDebugMode) {
+            print(type);
+          }
+          if (kDebugMode) {
+            print(asoController.text);
+          }
           if (result != null) {
             final PlatformFile file = result.files.first;
             DateTime? expirationDate = await showDatePicker(
@@ -147,8 +154,13 @@ class CadastrarModal extends StatelessWidget {
                       '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
               }
-              print(asoController.text);
-              print(expirationDate);
+              if (kDebugMode) {
+                print(asoController.text);
+              }
+              if (kDebugMode) {
+                print(expirationDate);
+              }
+              // ignore: use_build_context_synchronously
               context.read<CadastrarCubit>().addDocument(file, expirationDate,
                   type); // Trigger addDocument with the selected file and date
             }
