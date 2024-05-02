@@ -95,8 +95,16 @@ class DetailsView extends StatelessWidget {
               value: employee.cpf,
             ),
             TitleValueWidget(
+              title: "Telefone",
+              value: employee.telephone,
+            ),
+            TitleValueWidget(
               title: "Email",
               value: employee.email,
+            ),
+            TitleValueWidget(
+              title: "Tipo Sanguíneo",
+              value: employee.bloodType,
             ),
             TitleValueWidget(
               title: "Acesso (embarcação, dique seco ou ambas)",

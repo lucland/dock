@@ -1,4 +1,3 @@
-import 'package:dockcheck_web/features/home/bloc/cadastrar_cubit.dart';
 import 'package:dockcheck_web/utils/colors.dart';
 import 'package:dockcheck_web/utils/theme.dart';
 import 'package:file_picker/file_picker.dart';

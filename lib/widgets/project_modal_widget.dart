@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:dockcheck_web/widgets/file_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // Import Intl package for date formatting
@@ -18,9 +16,6 @@ class ProjectModal extends StatelessWidget {
   Widget build(BuildContext context) {
     String name = '';
     String vesselId = '';
-    DateTime startDate = DateTime.now();
-    DateTime endDate = DateTime.now();
-    bool isDocking = true;
     String address = '';
 
     return BlocBuilder<ProjectCubit, ProjectState>(
@@ -31,8 +26,8 @@ class ProjectModal extends StatelessWidget {
           ),
           backgroundColor: DockColors.white,
           surfaceTintColor: DockColors.white,
-          title:
-              Text('Adicionar Projeto'), // You can make this dynamic as needed
+          title: const Text(
+              'Adicionar Projeto'), // You can make this dynamic as needed
           content: SizedBox(
             width: 800,
             height: MediaQuery.of(context).size.height - 300,
@@ -40,7 +35,7 @@ class ProjectModal extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   TextInputWidget(
                       title: 'Nome da Embarcação',
                       isRequired: true,
@@ -50,41 +45,35 @@ class ProjectModal extends StatelessWidget {
                       onChanged: (text) {
                         vesselId = text;
                       }),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   CalendarPickerWidget(
                     title: 'Data de Início',
                     isRequired: true,
                     showAttachmentIcon: false,
                     controller: TextEditingController(
-                      text: state.startDate!.day.toString() +
-                          '/' +
-                          state.startDate!.month.toString() +
-                          '/' +
-                          state.startDate!.year.toString(),
+                      text:
+                          '${state.startDate!.day}/${state.startDate!.month}/${state.startDate!.year}',
                     ),
                     onChanged: (date) =>
                         context.read<ProjectCubit>().updateStartDate(date),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   CalendarPickerWidget(
                     title: 'Data de Término',
                     isRequired: true,
                     showAttachmentIcon: false,
                     controller: TextEditingController(
-                      text: state.endDate!.day.toString() +
-                          '/' +
-                          state.endDate!.month.toString() +
-                          '/' +
-                          state.endDate!.year.toString(),
+                      text:
+                          '${state.endDate!.day}/${state.endDate!.month}/${state.endDate!.year}',
                     ),
                     onChanged: (date) =>
                         context.read<ProjectCubit>().updateEndDate(date),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Tipo de Projeto',
                         style: DockTheme.h2,
                       ),
@@ -92,24 +81,22 @@ class ProjectModal extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
                           children: [
-                            Container(
-                              child: ChoiceChip(
-                                label: Text(
-                                    state.isDocking ? 'Docagem' : 'Docagem'),
-                                selected: state.isDocking,
-                                onSelected: (bool selected) {
-                                  // Toggle the state.isDocking value
-                                  context
-                                      .read<ProjectCubit>()
-                                      .updateIsDocking(!state.isDocking);
-                                }, // Adjust the color as needed
-                                selectedColor: DockColors
-                                    .iron100, // Adjust the color as needed
-                                labelStyle: TextStyle(
-                                  color: Colors.white,
-                                ),
-                                backgroundColor: Colors.grey,
+                            ChoiceChip(
+                              label:
+                                  Text(state.isDocking ? 'Docagem' : 'Docagem'),
+                              selected: state.isDocking,
+                              onSelected: (bool selected) {
+                                // Toggle the state.isDocking value
+                                context
+                                    .read<ProjectCubit>()
+                                    .updateIsDocking(!state.isDocking);
+                              }, // Adjust the color as needed
+                              selectedColor: DockColors
+                                  .iron100, // Adjust the color as needed
+                              labelStyle: const TextStyle(
+                                color: Colors.white,
                               ),
+                              backgroundColor: Colors.grey,
                             ),
                             Container(
                               padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
@@ -126,7 +113,7 @@ class ProjectModal extends StatelessWidget {
                                 }, // Adjust the color as needed
                                 selectedColor: DockColors
                                     .iron100, // Adjust the color as needed
-                                labelStyle: TextStyle(
+                                labelStyle: const TextStyle(
                                   color: Colors.white,
                                 ),
                                 backgroundColor: Colors.grey,
@@ -137,7 +124,7 @@ class ProjectModal extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   // New TextInputWidget for "Endereço"
                   TextInputWidget(
                       title: 'Local',
@@ -149,9 +136,9 @@ class ProjectModal extends StatelessWidget {
                         address = text;
                       } // Implement this method in your cubit
                       ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   // New FilePickerWidget for "Blueprints do projeto"
-                  FilePickerWidget(
+                  const FilePickerWidget(
                     title: 'Arranjo geral',
                   ),
                 ],
@@ -161,7 +148,7 @@ class ProjectModal extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancelar',
+              child: const Text('Cancelar',
                   style: TextStyle(color: DockColors.danger110)),
             ),
             TextButton(
@@ -171,7 +158,7 @@ class ProjectModal extends StatelessWidget {
                     .createProject(name, vesselId, address);
                 Navigator.of(context).pop();
               },
-              child: Text('Criar Projeto',
+              child: const Text('Criar Projeto',
                   style: TextStyle(color: DockColors.iron100)),
             ),
           ],

@@ -19,6 +19,11 @@ class EmployeeLoaded extends PesquisarState {
   EmployeeLoaded(this.employees);
 }
 
+class CompanyLoaded extends PesquisarState {
+  final Map<String, List<Employee>> companies;
+  CompanyLoaded(this.companies);
+}
+
 class PesquisarError extends PesquisarState {
   final String message;
   PesquisarError(this.message);

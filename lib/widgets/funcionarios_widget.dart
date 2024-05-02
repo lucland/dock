@@ -12,9 +12,9 @@ import 'cadastrar_modal_widget.dart';
 
 class FuncionariosWidget extends StatelessWidget {
   const FuncionariosWidget({
-    super.key,
+    Key? key,
     required this.listWidget,
-  });
+  }) : super(key: key);
 
   final List<Widget> listWidget;
 
@@ -26,10 +26,11 @@ class FuncionariosWidget extends StatelessWidget {
       builder: (context, state) {
         if (state is PesquisarLoading) {
           return SizedBox(
-              width: MediaQuery.of(context).size.width - 300,
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ));
+            width: MediaQuery.of(context).size.width - 300,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         } else if (state is PesquisarError) {
           return SizedBox(
             width: MediaQuery.of(context).size.width - 300,
@@ -37,22 +38,12 @@ class FuncionariosWidget extends StatelessWidget {
               child: CircularProgressIndicator(),
             ),
           );
-        } else if (state is PesquisarLoaded) {
-          List<Employee> displayEmployees = state.employees;
-          print(displayEmployees.length + 1);
-          if (context.read<PesquisarCubit>().isSearching) {
-            displayEmployees = displayEmployees
-                .where((employee) => employee.name.toLowerCase().contains(
-                    context.read<PesquisarCubit>().searchQuery.toLowerCase()))
-                .toList();
-          }
-
+        } else if (state is CompanyLoaded) {
           return Container(
             color: DockColors.background,
             width: MediaQuery.of(context).size.width - 300,
             height: MediaQuery.of(context).size.height,
             child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -69,8 +60,8 @@ class FuncionariosWidget extends StatelessWidget {
                         ),
                         InkWell(
                           onTap: () {
-                            //open modal with a text
-                            openModal(context, 'Adicionar funcionário');
+                            // Open modal with a text
+                            openModal(context, 'Adicionar funcionário', null);
                           },
                           child: Container(
                             height: 40,
@@ -98,7 +89,9 @@ class FuncionariosWidget extends StatelessWidget {
                                   Text(
                                     'Adicionar',
                                     style: DockTheme.h2.copyWith(
-                                        color: DockColors.white, fontSize: 16),
+                                      color: DockColors.white,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -163,11 +156,24 @@ class FuncionariosWidget extends StatelessWidget {
                             "Usuário atrelado a um projeto pendente de aprovação",
                             overflow: TextOverflow.ellipsis,
                             style: DockTheme.h2.copyWith(
-                                color: DockColors.iron80,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400),
+                              color: DockColors.iron80,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ],
+                      ),
+                    ),
+                    // Show a text with the number of employees
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        'Total de funcionários: ${state.companies.values.fold(0, (previousValue, element) => previousValue + element.length)}',
+                        style: DockTheme.h2.copyWith(
+                          color: DockColors.iron100,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                     TextField(
@@ -203,23 +209,16 @@ class FuncionariosWidget extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        physics: const ClampingScrollPhysics(),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height - 200,
-                              child: ListView.builder(
-                                itemCount: displayEmployees.length,
-                                itemBuilder: (context, index) {
-                                  Employee employee = displayEmployees[index];
-                                  return _buildUserListTile(context, employee);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: Column(
+                        children: state.companies.entries.map((entry) {
+                          final companyName = entry.key;
+                          final employees = entry.value;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: _buildCompanyListTile(
+                                context, companyName, employees),
+                          );
+                        }).toList(),
                       ),
                     ),
                   ],
@@ -234,8 +233,36 @@ class FuncionariosWidget extends StatelessWidget {
     );
   }
 
+  Widget _buildCompanyListTile(
+      BuildContext context, String companyName, List<Employee> employees) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+          child: Text(
+            companyName + ' (${employees.length} funcionários)',
+            style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: DockColors.iron100),
+          ),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: employees.length,
+          itemBuilder: (context, index) {
+            return _buildUserListTile(context, employees[index]);
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildUserListTile(BuildContext context, Employee employee) {
     return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(
@@ -244,21 +271,101 @@ class FuncionariosWidget extends StatelessWidget {
           ),
         ),
       ),
-      child: ListTile(
-        trailing:
-            const Icon(Icons.chevron_right_rounded, color: DockColors.slate100),
-        title: Text(employee.name, style: DockTheme.h2),
-        titleAlignment: ListTileTitleAlignment.center,
-        dense: true,
-        visualDensity: VisualDensity.compact,
-        horizontalTitleGap: 0,
-        leading: _buildLeadingIcon(employee),
-        subtitle: Text(
-          "${employee.role} - ${employee.thirdCompanyId}",
-        ),
-        onTap: () {
-          _openRightSideModal(context, employee);
-        },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: InkWell(
+              onTap: () {
+                _openRightSideModal(context, employee);
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Leading icon
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildLeadingIcon(employee),
+                  ),
+                  // Title and subtitle
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(employee.name, style: DockTheme.h2),
+                      Text("${employee.role} - ${employee.thirdCompanyId}"),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              openModal(context, 'Editar', employee.id);
+            },
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: DockColors.iron100,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Icon(
+                Icons.edit_outlined,
+                color: DockColors.white,
+                size: 16,
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 16,
+          ),
+          InkWell(
+            onTap: () {
+              //show dialog to confirm delete employee
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Excluir funcionário'),
+                    content: const Text(
+                        'Tem certeza que deseja excluir este funcionário?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancelar'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          context
+                              .read<PesquisarCubit>()
+                              .removeEmployee(employee);
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Excluir'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: DockColors.danger100,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Icon(
+                Icons.delete_outline_rounded,
+                color: DockColors.white,
+                size: 16,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -305,13 +412,14 @@ class FuncionariosWidget extends StatelessWidget {
     }
   }
 
-  void openModal(BuildContext context, String s) {
+  void openModal(BuildContext context, String s, String? id) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return CadastrarModal(
           s: s,
+          id: id,
         );
       },
     );

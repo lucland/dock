@@ -65,6 +65,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
               userId: '-',
+              telephone: '',
             ),
             event: Event(
               id: const Uuid().v4(),
@@ -125,18 +126,67 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
   }
 
+  //create a update employee function to update the employee details, sending just the desired fields, making the other fields empty or null
+  void updateEmployee(String id, Employee employee) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final updatedEmployee =
+          await employeeRepository.updateEmployee(id, employee);
+      if (!isClosed) {
+        emit(state.copyWith(employee: updatedEmployee, isLoading: false));
+      }
+    } catch (e) {
+      SimpleLogger.warning('Error during data synchronization: $e');
+      print(e.toString());
+      if (!isClosed) {
+        emit(state.copyWith(
+          isLoading: false,
+          errorMessage: e.toString(),
+        ));
+      }
+    }
+  }
+
+  //get employee by the provided id and update the state with the employee data
+  void getEmployeeById(String id) async {
+    print("getEmployeeById");
+    if (!isClosed) {
+      emit(state.copyWith(isLoading: true));
+    }
+    try {
+      final employee = await employeeRepository.getEmployeeById(id);
+      if (!isClosed) {
+        emit(state.copyWith(employee: employee, isLoading: false));
+      }
+    } catch (e) {
+      SimpleLogger.warning('Error during data synchronization: $e');
+      print(e.toString());
+      if (!isClosed) {
+        emit(state.copyWith(
+          isLoading: false,
+          errorMessage: e.toString(),
+        ));
+      }
+    }
+  }
+
   //updateAuthorizationType updating employee.area
   void updateAuthorizationType(String authorizationType) {
     final employee = state.employee.copyWith(area: authorizationType);
-    bool canCreate = state.picture.base64.isNotEmpty &&
-        state.documents.length >= 2 &&
-        state.employee.cpf.isNotEmpty &&
+    bool canCreate = state.employee.cpf.isNotEmpty &&
         state.employee.name.isNotEmpty &&
         state.employee.email.isNotEmpty &&
         state.employee.thirdCompanyId.isNotEmpty;
     state.employee.role.isNotEmpty;
     emit(state.copyWith(employee: employee));
     //  checkCadastroHabilitado();
+  }
+
+  //void updateTelefone(String telefone)
+
+  void updateTelefone(String telefone) {
+    final employee = state.employee.copyWith(telephone: telefone);
+    emit(state.copyWith(employee: employee));
   }
 
   void addNrType(String nrType) {
@@ -193,16 +243,14 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         path: 'documents/$docId',
         status: 'pending',
       ));
-    bool canCreate = state.picture.base64.isNotEmpty &&
-        state.documents.length > 1 &&
-        state.employee.cpf.isNotEmpty &&
-        state.employee.name.isNotEmpty &&
+    bool canCreate = state.employee.cpf.isNotEmpty &&
         state.employee.name.isNotEmpty &&
         state.employee.email.isNotEmpty &&
         state.employee.thirdCompanyId.isNotEmpty;
     state.employee.role.isNotEmpty;
 
-    emit(state.copyWith(documents: updatedDocuments, isLoading: false));
+    emit(state.copyWith(
+        documents: updatedDocuments, isLoading: false, canCreate: canCreate));
     // checkCadastroHabilitado();
   }
 
@@ -219,8 +267,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       Uint8List bytes = result.files.first.bytes!;
       String base64Image = base64Encode(bytes);
       final picture = state.picture.copyWith(base64: base64Image);
-      bool canCreate = state.documents.length >= 2 &&
-          state.employee.cpf.isNotEmpty &&
+      bool canCreate = state.employee.cpf.isNotEmpty &&
           state.employee.name.isNotEmpty &&
           state.employee.email.isNotEmpty &&
           state.employee.thirdCompanyId.isNotEmpty;
@@ -234,9 +281,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   //add third company name to the employee
   void addThirdCompany(String thirdCompany) {
     final employee = state.employee.copyWith(thirdCompanyId: thirdCompany);
-    bool canCreate = state.picture.base64.isNotEmpty &&
-        state.documents.length >= 2 &&
-        state.employee.cpf.isNotEmpty &&
+    bool canCreate = state.employee.cpf.isNotEmpty &&
         state.employee.name.isNotEmpty &&
         state.employee.email.isNotEmpty &&
         state.employee.role.isNotEmpty;
@@ -261,9 +306,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void updateNome(String nome) {
     final employee = state.employee.copyWith(name: nome, status: 'created');
     if (!isClosed) {
-      bool canCreate = state.picture.base64.isNotEmpty &&
-          state.documents.length >= 2 &&
-          state.employee.cpf.isNotEmpty &&
+      bool canCreate = state.employee.cpf.isNotEmpty &&
           state.employee.role.isNotEmpty &&
           state.employee.email.isNotEmpty &&
           state.employee.thirdCompanyId.isNotEmpty;
@@ -276,9 +319,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void updateEmail(String email) {
     final employee = state.employee.copyWith(email: email);
     if (!isClosed) {
-      bool canCreate = state.picture.base64.isNotEmpty &&
-          state.documents.length >= 2 &&
-          state.employee.cpf.isNotEmpty &&
+      bool canCreate = state.employee.cpf.isNotEmpty &&
           state.employee.name.isNotEmpty &&
           state.employee.role.isNotEmpty &&
           state.employee.thirdCompanyId.isNotEmpty;
@@ -290,9 +331,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void updateCpf(String cpf) {
     final employee = state.employee.copyWith(cpf: cpf);
     if (!isClosed) {
-      bool canCreate = state.picture.base64.isNotEmpty &&
-          state.documents.length >= 2 &&
-          state.employee.role.isNotEmpty &&
+      bool canCreate = state.employee.role.isNotEmpty &&
           state.employee.name.isNotEmpty &&
           state.employee.email.isNotEmpty &&
           state.employee.thirdCompanyId.isNotEmpty;
@@ -304,9 +343,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void updateRole(String role) {
     final employee = state.employee.copyWith(role: role);
     if (!isClosed) {
-      bool canCreate = state.picture.base64.isNotEmpty &&
-          state.documents.length >= 2 &&
-          state.employee.cpf.isNotEmpty &&
+      bool canCreate = state.employee.cpf.isNotEmpty &&
           state.employee.name.isNotEmpty &&
           state.employee.email.isNotEmpty &&
           state.employee.thirdCompanyId.isNotEmpty;
@@ -318,9 +355,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void updateEmpresa(String empresa) {
     final employee = state.employee.copyWith(thirdCompanyId: empresa);
     if (!isClosed) {
-      bool canCreate = state.picture.base64.isNotEmpty &&
-          state.documents.length >= 2 &&
-          state.employee.cpf.isNotEmpty &&
+      bool canCreate = state.employee.cpf.isNotEmpty &&
           state.employee.name.isNotEmpty &&
           state.employee.role.isNotEmpty &&
           state.employee.email.isNotEmpty;
@@ -354,6 +389,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
           userId: '-',
+          telephone: '',
         ),
         event: Event(
           id: const Uuid().v4(),
@@ -383,7 +419,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   }
 
   void createEvent(String name, String cpf, String email, String funcao,
-      String empresa, String bloodType) async {
+      String empresa, String bloodType, String telephone) async {
     fetchNumero();
     final event = state.event.copyWith(
       employeeId: state.employee.id,
@@ -404,6 +440,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
           role: funcao,
           thirdCompanyId: empresa,
           bloodType: bloodType,
+          telephone: telephone,
         ),
         event: event,
       ));
@@ -428,7 +465,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
 //create picture with PictureRepository passing state.picture
   Future<void> createPicture() async {
-    if (state.picture.base64.isEmpty || state.picture.base64 == '-') {
+    if (state.picture.base64.isEmpty ||
+        state.picture.base64 == '-' ||
+        state.picture.base64 == null) {
       if (!isClosed) {
         createDocuments();
       }
@@ -460,7 +499,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   //create documents, for each Document in state.documents, create a document with DocumentRepository passing the document
   Future<void> createDocuments() async {
     print("createDocuments");
-    if (state.documents.isEmpty) {
+    if (state.documents.isEmpty ||
+        state.documents == [] ||
+        state.documents == null) {
       if (!isClosed) {
         createEmployee();
       }
@@ -492,13 +533,18 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     var numero = await employeeRepository.getLastEmployeeNumber();
     print(numero);
     //if there are any expiring date of any document that is before today, turn a boolean false
-    bool isExpired = state.documents.any((element) =>
-        element.expirationDate.isBefore(DateTime.now()) ||
-        element.expirationDate.isAtSameMomentAs(DateTime.now()));
+    if (!state.documents.isEmpty &&
+        state.documents != [] &&
+        state.documents != null) {
+      bool isExpired = state.documents.any((element) =>
+          element.expirationDate.isBefore(DateTime.now()) ||
+          element.expirationDate.isAtSameMomentAs(DateTime.now()));
+    }
+
     //parse the numero string to int
     if (!isClosed) {
       final employee = state.employee.copyWith(
-          documentsOk: !isExpired,
+          documentsOk: true, //isExpired
           userId: userId,
           isBlocked: true,
           number: numero + 1,
@@ -537,9 +583,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         role: funcao,
         thirdCompanyId: empresa);
     emit(state.copyWith(employee: employee, isLoading: true));
-    bool canCreate = state.picture.base64.isNotEmpty &&
-        state.documents.length >= 2 &&
-        state.employee.cpf.isNotEmpty &&
+    bool canCreate = state.employee.cpf.isNotEmpty &&
         state.employee.name.isNotEmpty &&
         state.employee.role.isNotEmpty &&
         state.employee.thirdCompanyId.isNotEmpty &&

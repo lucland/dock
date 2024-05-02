@@ -33,37 +33,37 @@ class PesquisarCubit extends Cubit<PesquisarState> {
     loggedUserId = await loggedInUser ?? '';
   }
 
-  //get signed in user number
+  void removeEmployee(Employee employee) async {
+    try {
+      emit(PesquisarLoading());
+      await employeeRepository.removeEmployee(employee.id);
+      allEmployee.remove(employee);
+      _applySearchFilter();
+    } catch (e) {
+      emit(PesquisarError("Failed to remove employee: $e"));
+    }
+  }
 
   Future<void> fetchEmployees() async {
-    getLoggedUserId();
-
-    print("fetchEmployees");
-    print(loggedUserId);
-    SimpleLogger.info('Fetching employees');
     try {
-      if (!isClosed) {
-        emit(PesquisarLoading());
-      }
+      emit(PesquisarLoading());
 
       String userId = await localStorageService.getUserId();
-      print(userId);
-      User? logged = await localStorageService.getUser();
+      List<Employee> allEmployees =
+          await employeeRepository.getEmployeesByUserId(userId);
 
-      allEmployee = await employeeRepository.getEmployeesByUserId(userId);
-      print(allEmployee.length);
-      bool isAd = true;
-      if (logged != null && logged.number == 0) {
-        isAd = false;
-      }
-      if (!isClosed) {
-        emit(PesquisarLoaded(allEmployee, isAd));
-      }
+      // Group employees by thirdCompanyId
+      Map<String, List<Employee>> companies = {};
+      allEmployees.forEach((employee) {
+        if (!companies.containsKey(employee.thirdCompanyId)) {
+          companies[employee.thirdCompanyId] = [];
+        }
+        companies[employee.thirdCompanyId]!.add(employee);
+      });
+
+      emit(CompanyLoaded(companies));
     } catch (e) {
-      SimpleLogger.warning('Error during data synchronization: $e');
-      if (!isClosed) {
-        emit(PesquisarError("Failed to fetch users1. $e"));
-      }
+      emit(PesquisarError("Failed to fetch employees: $e"));
     }
   }
 
@@ -79,30 +79,32 @@ class PesquisarCubit extends Cubit<PesquisarState> {
       // Verifica se já carregou os usuários do banco de dados
       if (allEmployee.isEmpty) {
         String userId = await localStorageService.getUserId();
-
         allEmployee = await employeeRepository.getEmployeesByUserId(userId);
       }
 
+      // Filter employees by name or thirdCompanyId
       filteredEmployee = allEmployee
           .where((employee) =>
-              employee.name.toLowerCase().contains(query.toLowerCase()))
+              employee.name.toLowerCase().contains(query.toLowerCase()) ||
+              employee.thirdCompanyId
+                  .toLowerCase()
+                  .contains(query.toLowerCase()))
           .toList();
 
-      String userId = await localStorageService.getUserId();
-      print(userId);
-      User? logged = await localStorageService.getUser();
-      bool isAd = true;
-      if (logged != null && logged.number == 0) {
-        isAd = false;
-      }
+      // Group employees by thirdCompanyId
+      Map<String, List<Employee>> companies = {};
+      filteredEmployee.forEach((employee) {
+        if (!companies.containsKey(employee.thirdCompanyId)) {
+          companies[employee.thirdCompanyId] = [];
+        }
+        companies[employee.thirdCompanyId]!.add(employee);
+      });
 
-      if (!isClosed) {
-        emit(PesquisarLoaded(filteredEmployee, isAd));
-      }
+      emit(CompanyLoaded(companies));
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
       if (!isClosed) {
-        emit(PesquisarError("Failed to fetch users2. $e"));
+        emit(PesquisarError("Erro ao buscar funcionário $e"));
       }
     }
   }

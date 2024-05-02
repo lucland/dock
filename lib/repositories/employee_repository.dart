@@ -63,11 +63,22 @@ class EmployeeRepository {
 
   Future<Employee> updateEmployee(String id, Employee employee) async {
     try {
-      final data = await apiService.put('employees/$id', employee.toJson());
+      final data = await apiService.put(
+          'employees/updateEmployee/$id', employee.toJson());
       return Employee.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update employee: ${e.toString()}');
       return employee;
+    }
+  }
+
+  //router.delete('/removeEmployee/:id', employeeController.removeEmployee); //delete employee
+  Future<void> removeEmployee(String id) async {
+    try {
+      await apiService.delete('employees/removeEmployee/$id');
+      SimpleLogger.info('Employee removed successfully');
+    } catch (e) {
+      SimpleLogger.severe('Failed to remove employee: ${e.toString()}');
     }
   }
 
@@ -107,4 +118,8 @@ class EmployeeRepository {
       SimpleLogger.severe('Failed to approve employee: ${e.toString()}');
     }
   }
+
+  //update employee
+
+  //delete method to /employees/{id}:
 }

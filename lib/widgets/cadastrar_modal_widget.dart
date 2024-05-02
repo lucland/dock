@@ -1,11 +1,9 @@
-import 'dart:io';
-
+import 'package:dockcheck_web/models/employee.dart';
 import 'package:dockcheck_web/widgets/image_picker_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
-import 'package:provider/provider.dart';
 
 import '../enums/nrs_enum.dart';
 import '../features/home/bloc/cadastrar_cubit.dart';
@@ -13,18 +11,22 @@ import '../features/home/bloc/cadastrar_state.dart';
 import '../utils/colors.dart';
 import '../utils/strings.dart';
 import '../utils/theme.dart';
-import 'calendar_picker_widget.dart';
 import 'text_input_widget.dart';
 
 class CadastrarModal extends StatelessWidget {
   final String s;
+  final String? id;
   const CadastrarModal({
     super.key,
     required this.s,
+    this.id,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (id != null && id != '') {
+      context.read<CadastrarCubit>().getEmployeeById(id!);
+    }
     TextEditingController asoController = TextEditingController();
     TextEditingController nr34Controller = TextEditingController();
     TextEditingController nr35Controller = TextEditingController();
@@ -42,10 +44,43 @@ class CadastrarModal extends StatelessWidget {
     String funcao = '';
     String cpf = '';
     String bloodType = 'A+';
+    String telephone = '';
+    bool isEditing = false;
 
     return BlocBuilder<CadastrarCubit, CadastrarState>(
       builder: (context, state) {
-        Future<void> _pickFile(BuildContext context, String type) async {
+        if (id != null && id != '') {
+          isEditing = true;
+        }
+        if (state.isLoading) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 32.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (state.isLoading != true &&
+            state.errorMessage != '' &&
+            state.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage!),
+              backgroundColor: DockColors.danger100,
+            ),
+          );
+        }
+        // ignore: unnecessary_null_comparison
+        if (state.employee.id != '' || state.employee.id != null) {
+          name = state.employee.name;
+          email = state.employee.email;
+          empresa = state.employee.thirdCompanyId;
+          funcao = state.employee.role;
+          cpf = state.employee.cpf;
+          bloodType = state.employee.bloodType;
+        }
+
+        Future<void> pickFile(BuildContext context, String type) async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(
             type: FileType.custom,
             allowedExtensions: ['pdf'],
@@ -68,81 +103,48 @@ class CadastrarModal extends StatelessWidget {
             if (expirationDate != null) {
               switch (type) {
                 case "ASO":
-                  asoController.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  asoController.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-34":
-                  nr34Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr34Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-35 - TRABALHO EM ALTURA":
-                  nr35Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr35Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-10 - SEGURANÇA EM INSTALAÇÕES E SERVIÇOS EM ELETRICIDADE":
-                  nr10Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr10Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-37 - SEGURANÇA E SAÚDE EM PLATAFORMAS DE PETRÓLEO":
-                  nr37Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr37Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-38 - SEGURANÇA E SAÚDE NO TRABALHO NAS ATIVIDADES DE LIMPEZA URBANA E MANEJO DE RESÍDUOS SÓLIDOS":
-                  nr38Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr38Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-11 - TRANSPORTE, MOVIMENTAÇÃO, ARMAZENAGEM E MANUSEIO DE MATERIAIS":
-                  nr11Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr11Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "NR-33 - SEGURANÇA E SAÚDE NO TRABALHO EM ESPAÇOS CONFINADOS":
-                  nr33Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  nr33Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "IRATA N1":
-                  irataN1Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  irataN1Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "IRATA N2":
-                  irataN2Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  irataN2Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
                 case "IRATA N3":
-                  irataN3Controller.text = expirationDate.day.toString() +
-                      '/' +
-                      expirationDate.month.toString() +
-                      '/' +
-                      expirationDate.year.toString();
+                  irataN3Controller.text =
+                      '${expirationDate.day}/${expirationDate.month}/${expirationDate.year}';
                   break;
               }
               print(asoController.text);
@@ -233,10 +235,22 @@ class CadastrarModal extends StatelessWidget {
                                 keyboardType: TextInputType.number,
                                 isRequired: true,
                               ),
+                              TextInputWidget(
+                                title: 'Telefone',
+                                controller: TextEditingController(
+                                  text: telephone,
+                                ),
+                                onChanged: (text) {
+                                  telephone = text;
+                                },
+                                keyboardType: TextInputType.number,
+                                isRequired: false,
+                              ),
                             ],
                           ),
                         ),
-                        Flexible(
+                        if (!isEditing) ...[
+                          Flexible(
                             flex: 4,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -263,7 +277,59 @@ class CadastrarModal extends StatelessWidget {
                                 ImagePickerWidget(
                                     cubit: context.read<CadastrarCubit>()),
                               ],
-                            )),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Tipo sanguíneo', style: DockTheme.h2),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 8, right: 16, bottom: 8),
+                          child: DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 11.5),
+                              hintText: 'Tipo Sanguíneo',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: DockColors.slate100,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: DockColors.slate100,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            value: 'A+',
+                            onChanged: (String? newValue) {
+                              bloodType = newValue!;
+                            },
+                            items: [
+                              'A+',
+                              'A-',
+                              'B+',
+                              'B-',
+                              'AB+',
+                              'AB-',
+                              'O+',
+                              'O-',
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ),
                       ],
                     ),
                     //a collumn with a Text saying "Autorização de entrada" and below a row with three containers with a text and a logic to switch between them when clicked
@@ -383,274 +449,40 @@ class CadastrarModal extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
-                          child: Text(
-                            'Documentos',
-                            overflow: TextOverflow.ellipsis,
-                            style: DockTheme.h1.copyWith(
-                                color: DockColors.iron80,
-                                fontWeight: FontWeight.w400),
+                    if (!isEditing) ...[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
+                            child: Text(
+                              'Documentos',
+                              overflow: TextOverflow.ellipsis,
+                              style: DockTheme.h1.copyWith(
+                                  color: DockColors.iron80,
+                                  fontWeight: FontWeight.w400),
+                            ),
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    DockStrings.aso,
-                                    style: DockTheme.h2.copyWith(fontSize: 18),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  '*',
-                                  style: DockTheme.h2.copyWith(
-                                      color: DockColors.danger100,
-                                      fontSize: 18),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          controller: asoController,
-                                          decoration: InputDecoration(
-                                            hintText: DockStrings.aso,
-                                            suffixIcon: const Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.calendar_today,
-                                                  color: DockColors.slate100,
-                                                ),
-                                                SizedBox(
-                                                  width: 20,
-                                                ),
-                                              ],
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              borderSide: const BorderSide(
-                                                color: DockColors.slate100,
-                                                width: 1.0,
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              borderSide: const BorderSide(
-                                                color: DockColors.slate100,
-                                                width: 1.0,
-                                              ),
-                                            ),
-                                          ),
-                                          onTap: () async {
-                                            _pickFile(context, "ASO");
-                                          },
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: InkWell(
-                                          onTap: () =>
-                                              _pickFile(context, "ASO"),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: DockColors.slate100,
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                            ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(12.0),
-                                              child: Icon(
-                                                Icons.attach_file,
-                                                color: DockColors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (state.documents.any(
-                                      (document) => document.type == "ASO"))
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Text(
-                                        'Documento enviado com sucesso',
-                                        style: DockTheme.h3.copyWith(
-                                          color: DockColors.success100,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    DockStrings.nr34,
-                                    style: DockTheme.h2.copyWith(fontSize: 18),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  '*',
-                                  style: DockTheme.h2.copyWith(
-                                      color: DockColors.danger100,
-                                      fontSize: 18),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          controller: nr34Controller,
-                                          decoration: InputDecoration(
-                                            suffixIcon: const Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.calendar_today,
-                                                  color: DockColors.slate100,
-                                                ),
-                                                SizedBox(
-                                                  width: 20,
-                                                ),
-                                              ],
-                                            ),
-                                            hintText: DockStrings.nr34,
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              borderSide: const BorderSide(
-                                                color: DockColors.slate100,
-                                                width: 1.0,
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              borderSide: const BorderSide(
-                                                color: DockColors.slate100,
-                                                width: 1.0,
-                                              ),
-                                            ),
-                                          ),
-                                          readOnly: true,
-                                          onTap: () async {
-                                            _pickFile(context, "NR-34");
-                                          },
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: InkWell(
-                                          onTap: () =>
-                                              _pickFile(context, "NR-34"),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: DockColors.slate100,
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                            ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(12.0),
-                                              child: Icon(
-                                                Icons.attach_file,
-                                                color: DockColors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (state.documents.any(
-                                      (document) => document.type == "NR-34"))
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Text(
-                                        'Documento enviado com sucesso',
-                                        style: DockTheme.h3.copyWith(
-                                          color: DockColors.success100,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        ...state.nrTypes.map((nrType) {
-                          //add the proper text editting controller depending on the type of NR
-                          TextEditingController controller =
-                              TextEditingController();
-                          switch (nrType) {
-                            case 'NR-35 - TRABALHO EM ALTURA':
-                              controller = nr35Controller;
-                              break;
-                            case 'NR-10 - SEGURANÇA EM INSTALAÇÕES E SERVIÇOS EM ELETRICIDADE':
-                              controller = nr10Controller;
-                              break;
-                            case 'NR-37 - SEGURANÇA E SAÚDE EM PLATAFORMAS DE PETRÓLEO':
-                              controller = nr37Controller;
-                              break;
-                            case 'NR-38 - SEGURANÇA E SAÚDE NO TRABALHO NAS ATIVIDADES DE LIMPEZA URBANA E MANEJO DE RESÍDUOS SÓLIDOS':
-                              controller = nr38Controller;
-                              break;
-                            case 'NR-11 - TRANSPORTE, MOVIMENTAÇÃO, ARMAZENAGEM E MANUSEIO DE MATERIAIS':
-                              controller = nr11Controller;
-                              break;
-                            case 'NR-33 - SEGURANÇA E SAÚDE NO TRABALHO EM ESPAÇOS CONFINADOS':
-                              controller = nr33Controller;
-                              break;
-                            case 'IRATA N1':
-                              controller = irataN1Controller;
-                              break;
-                            case 'IRATA N2':
-                              controller = irataN2Controller;
-                              break;
-                            case 'IRATA N3':
-                              controller = irataN3Controller;
-                              break;
-                          }
-                          return Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                nrType,
-                                style: DockTheme.h2.copyWith(fontSize: 18),
-                                overflow: TextOverflow.ellipsis,
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      DockStrings.aso,
+                                      style:
+                                          DockTheme.h2.copyWith(fontSize: 18),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Text(
+                                    '*',
+                                    style: DockTheme.h2.copyWith(
+                                        color: DockColors.danger100,
+                                        fontSize: 18),
+                                  ),
+                                ],
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -661,8 +493,9 @@ class CadastrarModal extends StatelessWidget {
                                       children: [
                                         Expanded(
                                           child: TextField(
-                                            controller: controller,
+                                            controller: asoController,
                                             decoration: InputDecoration(
+                                              hintText: DockStrings.aso,
                                               suffixIcon: const Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
@@ -675,7 +508,6 @@ class CadastrarModal extends StatelessWidget {
                                                   ),
                                                 ],
                                               ),
-                                              hintText: nrType,
                                               border: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(8.0),
@@ -693,9 +525,8 @@ class CadastrarModal extends StatelessWidget {
                                                 ),
                                               ),
                                             ),
-                                            readOnly: true,
                                             onTap: () async {
-                                              _pickFile(context, nrType);
+                                              pickFile(context, "ASO");
                                             },
                                           ),
                                         ),
@@ -704,7 +535,7 @@ class CadastrarModal extends StatelessWidget {
                                               const EdgeInsets.only(left: 8.0),
                                           child: InkWell(
                                             onTap: () =>
-                                                _pickFile(context, nrType),
+                                                pickFile(context, "ASO"),
                                             child: Container(
                                               decoration: BoxDecoration(
                                                 color: DockColors.slate100,
@@ -724,7 +555,7 @@ class CadastrarModal extends StatelessWidget {
                                       ],
                                     ),
                                     if (state.documents.any(
-                                        (document) => document.type == nrType))
+                                        (document) => document.type == "ASO"))
                                       Padding(
                                         padding:
                                             const EdgeInsets.only(top: 8.0),
@@ -740,89 +571,340 @@ class CadastrarModal extends StatelessWidget {
                                 ),
                               ),
                             ],
-                          );
-                        }),
-                        const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Row(
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: DropdownButtonFormField<String>(
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 11.5),
-                                    hintText: 'Adicionar NR',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: const BorderSide(
-                                        color: DockColors.slate100,
-                                        width: 1,
-                                      ),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      DockStrings.nr34,
+                                      style:
+                                          DockTheme.h2.copyWith(fontSize: 18),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: const BorderSide(
-                                        color: DockColors.slate100,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    focusColor: DockColors.background,
-                                    hoverColor: DockColors.background,
-                                    fillColor: DockColors.background,
                                   ),
-                                  focusColor: DockColors.white,
-                                  value: state.selectedNr == ''
-                                      ? null
-                                      : state.selectedNr,
-                                  onChanged: (String? newValue) {
-                                    context
-                                        .read<CadastrarCubit>()
-                                        .updateSelectedNr(
-                                          newValue ?? '',
-                                        );
-                                  },
-                                  items: NrsEnum.nrs
-                                      .map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: SizedBox(
-                                          width: 600,
-                                          child: Text(value,
-                                              overflow: TextOverflow.ellipsis)),
-                                    );
-                                  }).toList(),
-                                ),
+                                  Text(
+                                    '*',
+                                    style: DockTheme.h2.copyWith(
+                                        color: DockColors.danger100,
+                                        fontSize: 18),
+                                  ),
+                                ],
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: InkWell(
-                                  onTap: () => state.selectedNr != ''
-                                      ? context
-                                          .read<CadastrarCubit>()
-                                          .addNrType(state.selectedNr)
-                                      : null,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: state.selectedNr != ''
-                                          ? DockColors.success100
-                                          : DockColors.slate100,
-                                      borderRadius: BorderRadius.circular(8),
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            controller: nr34Controller,
+                                            decoration: InputDecoration(
+                                              suffixIcon: const Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.calendar_today,
+                                                    color: DockColors.slate100,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 20,
+                                                  ),
+                                                ],
+                                              ),
+                                              hintText: DockStrings.nr34,
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                borderSide: const BorderSide(
+                                                  color: DockColors.slate100,
+                                                  width: 1.0,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                borderSide: const BorderSide(
+                                                  color: DockColors.slate100,
+                                                  width: 1.0,
+                                                ),
+                                              ),
+                                            ),
+                                            readOnly: true,
+                                            onTap: () async {
+                                              pickFile(context, "NR-34");
+                                            },
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: InkWell(
+                                            onTap: () =>
+                                                pickFile(context, "NR-34"),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: DockColors.slate100,
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                              ),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(12.0),
+                                                child: Icon(
+                                                  Icons.attach_file,
+                                                  color: DockColors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Icon(Icons.add,
-                                          color: DockColors.white),
-                                    ),
-                                  ),
+                                    if (state.documents.any(
+                                        (document) => document.type == "NR-34"))
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 8.0),
+                                        child: Text(
+                                          'Documento enviado com sucesso',
+                                          style: DockTheme.h3.copyWith(
+                                            color: DockColors.success100,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
+                          ...state.nrTypes.map((nrType) {
+                            //add the proper text editting controller depending on the type of NR
+                            TextEditingController controller =
+                                TextEditingController();
+                            switch (nrType) {
+                              case 'NR-35 - TRABALHO EM ALTURA':
+                                controller = nr35Controller;
+                                break;
+                              case 'NR-10 - SEGURANÇA EM INSTALAÇÕES E SERVIÇOS EM ELETRICIDADE':
+                                controller = nr10Controller;
+                                break;
+                              case 'NR-37 - SEGURANÇA E SAÚDE EM PLATAFORMAS DE PETRÓLEO':
+                                controller = nr37Controller;
+                                break;
+                              case 'NR-38 - SEGURANÇA E SAÚDE NO TRABALHO NAS ATIVIDADES DE LIMPEZA URBANA E MANEJO DE RESÍDUOS SÓLIDOS':
+                                controller = nr38Controller;
+                                break;
+                              case 'NR-11 - TRANSPORTE, MOVIMENTAÇÃO, ARMAZENAGEM E MANUSEIO DE MATERIAIS':
+                                controller = nr11Controller;
+                                break;
+                              case 'NR-33 - SEGURANÇA E SAÚDE NO TRABALHO EM ESPAÇOS CONFINADOS':
+                                controller = nr33Controller;
+                                break;
+                              case 'IRATA N1':
+                                controller = irataN1Controller;
+                                break;
+                              case 'IRATA N2':
+                                controller = irataN2Controller;
+                                break;
+                              case 'IRATA N3':
+                                controller = irataN3Controller;
+                                break;
+                            }
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  nrType,
+                                  style: DockTheme.h2.copyWith(fontSize: 18),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              controller: controller,
+                                              decoration: InputDecoration(
+                                                suffixIcon: const Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.calendar_today,
+                                                      color:
+                                                          DockColors.slate100,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 20,
+                                                    ),
+                                                  ],
+                                                ),
+                                                hintText: nrType,
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  borderSide: const BorderSide(
+                                                    color: DockColors.slate100,
+                                                    width: 1.0,
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  borderSide: const BorderSide(
+                                                    color: DockColors.slate100,
+                                                    width: 1.0,
+                                                  ),
+                                                ),
+                                              ),
+                                              readOnly: true,
+                                              onTap: () async {
+                                                pickFile(context, nrType);
+                                              },
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 8.0),
+                                            child: InkWell(
+                                              onTap: () =>
+                                                  pickFile(context, nrType),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: DockColors.slate100,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                child: const Padding(
+                                                  padding: EdgeInsets.all(12.0),
+                                                  child: Icon(
+                                                    Icons.attach_file,
+                                                    color: DockColors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      if (state.documents.any((document) =>
+                                          document.type == nrType))
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 8.0),
+                                          child: Text(
+                                            'Documento enviado com sucesso',
+                                            style: DockTheme.h3.copyWith(
+                                              color: DockColors.success100,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                          const SizedBox(height: 16),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: DropdownButtonFormField<String>(
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 11.5),
+                                      hintText: 'Adicionar NR',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                          color: DockColors.slate100,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: const BorderSide(
+                                          color: DockColors.slate100,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      focusColor: DockColors.background,
+                                      hoverColor: DockColors.background,
+                                      fillColor: DockColors.background,
+                                    ),
+                                    focusColor: DockColors.white,
+                                    value: state.selectedNr == ''
+                                        ? null
+                                        : state.selectedNr,
+                                    onChanged: (String? newValue) {
+                                      context
+                                          .read<CadastrarCubit>()
+                                          .updateSelectedNr(
+                                            newValue ?? '',
+                                          );
+                                    },
+                                    items: NrsEnum.nrs
+                                        .map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: SizedBox(
+                                            width: 600,
+                                            child: Text(value,
+                                                overflow:
+                                                    TextOverflow.ellipsis)),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: InkWell(
+                                    onTap: () => state.selectedNr != ''
+                                        ? context
+                                            .read<CadastrarCubit>()
+                                            .addNrType(state.selectedNr)
+                                        : null,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: state.selectedNr != ''
+                                            ? DockColors.success100
+                                            : DockColors.slate100,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Icon(Icons.add,
+                                            color: DockColors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ],
               ),
@@ -840,34 +922,61 @@ class CadastrarModal extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                if (state.picture.base64 != '' &&
-                    state.documents.length >= 2 &&
-                    name != '' &&
-                    cpf != '' &&
-                    email != '' &&
-                    funcao != '' &&
-                    empresa != '') {
-                  context.read<CadastrarCubit>().createEvent(
-                        name,
-                        cpf,
-                        email,
-                        funcao,
-                        empresa,
-                        bloodType,
+                if (isEditing) {
+                  Employee employee = state.employee;
+                  employee.name = name;
+                  employee.email = email;
+                  employee.thirdCompanyId = empresa;
+                  employee.role = funcao;
+                  employee.cpf = cpf;
+                  employee.bloodType = bloodType;
+                  employee.telephone = telephone;
+
+                  context.read<CadastrarCubit>().updateEmployee(
+                        state.employee.id,
+                        employee,
                       );
-                  Navigator.of(context).pop();
-                } else {
+                  //show a snackbar with the message "Employee updated successfully" with a green background and them pop the modal
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Preencha todos os campos obrigatórios'),
-                      backgroundColor: DockColors.danger100,
+                      content: Text('Funcionário atualizado com sucesso'),
+                      backgroundColor: DockColors.success100,
                     ),
                   );
+                  Navigator.of(context).pop();
+                } else {
+                  if (state.picture.base64 != '' &&
+                      state.documents.length >= 2 &&
+                      name != '' &&
+                      cpf != '' &&
+                      email != '' &&
+                      funcao != '' &&
+                      empresa != '') {
+                    context.read<CadastrarCubit>().createEvent(
+                          name,
+                          cpf,
+                          email,
+                          funcao,
+                          empresa,
+                          bloodType,
+                          telephone,
+                        );
+                    Navigator.of(context).pop();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Preencha todos os campos obrigatórios'),
+                        backgroundColor: DockColors.danger100,
+                      ),
+                    );
+                  }
                 }
               },
-              child: Text('Adicionar',
+              child: Text(isEditing ? 'Salvar' : 'Adicionar',
                   style: TextStyle(
-                      color: DockColors.success100,
+                      color: isEditing
+                          ? DockColors.iron100
+                          : DockColors.success100,
                       fontWeight: FontWeight.bold)),
             ),
           ],
