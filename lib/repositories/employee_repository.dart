@@ -31,7 +31,7 @@ class EmployeeRepository {
   }
 
   Future<Employee> getEmployeeById(String id) async {
-    final data = await apiService.get('employees/$id');
+    final data = await apiService.get('employees/byid/$id');
     return Employee.fromJson(data);
   }
 
