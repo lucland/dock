@@ -8,6 +8,7 @@ class TextInputWidget extends StatelessWidget {
   final String title;
   final TextEditingController controller;
   final TextInputType keyboardType;
+  final void Function(String)? onSubmit;
   final bool isRequired;
   final bool isError;
   final bool isPassword;
@@ -20,6 +21,7 @@ class TextInputWidget extends StatelessWidget {
     this.title = '',
     required this.controller,
     this.keyboardType = TextInputType.text,
+    this.onSubmit,
     this.isRequired = false,
     this.isError = false,
     this.isPassword = false,
@@ -90,6 +92,7 @@ class TextInputWidget extends StatelessWidget {
             keyboardType: keyboardType,
             controller: controller,
             obscureText: isPassword,
+            onSubmitted: onSubmit ?? (value) {},
             onChanged:
                 isEnabled ? onChanged : null, // Disable input if not enabled
             enabled: isEnabled, // Use the isEnabled parameter
