@@ -132,6 +132,13 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     try {
       final updatedEmployee =
           await employeeRepository.updateEmployee(id, employee);
+      //add new documents if there are any
+      if (state.documents.isNotEmpty) {
+        for (var document in state.documents) {
+          await documentRepository.createDocument(document);
+        }
+      }
+
       if (!isClosed) {
         emit(state.copyWith(employee: updatedEmployee, isLoading: false));
       }
@@ -155,8 +162,22 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
     try {
       final employee = await employeeRepository.getEmployeeById(id);
+      final documents = await documentRepository.getDocumentByEmployeeId(id);
+
+      final nrTypes = documents
+          .where(
+              (document) => document.type != "ASO" && document.type != "NR-34")
+          .map((e) => e.type)
+          .toSet()
+          .toList();
+      //remove duplicates from the list
+      nrTypes.toSet().toList();
       if (!isClosed) {
-        emit(state.copyWith(employee: employee, isLoading: false));
+        emit(state.copyWith(
+            employee: employee,
+            isLoading: false,
+            documents: documents,
+            nrTypes: nrTypes));
       }
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
@@ -210,6 +231,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   void addDocument(
       PlatformFile file, DateTime expirationDate, String type) async {
+    Employee employee = state.employee;
     emit(state.copyWith(isLoading: true));
     String docId = const Uuid().v4();
     String fileName = "";
@@ -253,12 +275,16 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     state.employee.role.isNotEmpty;*/
 
     emit(state.copyWith(
-        documents: updatedDocuments, isLoading: false, canCreate: true));
+        documents: updatedDocuments,
+        isLoading: false,
+        canCreate: true,
+        employee: employee));
     // checkCadastroHabilitado();
   }
 
   Future<void> pickImage() async {
     Employee employee = state.employee;
+    print(employee.name);
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
       allowCompression: true,
@@ -270,6 +296,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       Uint8List bytes = result.files.first.bytes!;
       String base64Image = base64Encode(bytes);
       final picture = state.picture.copyWith(base64: base64Image);
+      print(employee.name);
       bool canCreate = state.employee.cpf.isNotEmpty &&
           state.employee.name.isNotEmpty &&
           state.employee.email.isNotEmpty &&

@@ -21,7 +21,7 @@ class CadastrarState {
   CadastrarState({
     this.numero = 0,
     required this.employee,
-    this.isLoading = false,
+    this.isLoading = true,
     this.errorMessage,
     required this.event,
     this.employeeCreated = false,
